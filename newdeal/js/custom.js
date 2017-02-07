@@ -1,11 +1,11 @@
-                                
+
 
 jQuery(function ($) { "use strict";
-	
+
 	/* ========================================================================= */
 	/*	Page Preloader
 	/* ========================================================================= */
-	
+
 	window.onload = function () {
 		document.getElementById('loading-mask').style.display = 'none';
 	}
@@ -13,10 +13,10 @@ jQuery(function ($) { "use strict";
 	/* =========================================================================== */
 	/*	FitVids js
 	/* =========================================================================== */
-	
+
 	$(".media-wrapper").fitVids();
 
-	
+
 	/* ========================================================================= */
 	/*	Nice Scroll - Custom Scrollbar
 	/* ========================================================================= */
@@ -34,7 +34,7 @@ jQuery(function ($) { "use strict";
 	/* ========================================================================= */
 	/*	Scroll Up / Back to top
 	/* ========================================================================= */
-	
+
 	$(window).scroll(function() {
 		if ($(window).scrollTop() > 400) {
 			$("#scrollUp").fadeIn(200);
@@ -42,13 +42,13 @@ jQuery(function ($) { "use strict";
 			$("#scrollUp").fadeOut(200);
 		}
 	});
-	
+
 	$('#scrollUp').click(function() {
 		$('html, body').stop().animate({
 			scrollTop : 0
 		}, 1500, 'easeInOutExpo');
 	});
-	
+
 	$('#scrollDown').click(function() {
 		$('html, body').stop().animate({
 			scrollTop : 900
@@ -59,7 +59,7 @@ jQuery(function ($) { "use strict";
 	/* ========================================================================= */
 	/*	Post image slider
 	/* ========================================================================= */
-	
+
 	$("#post-thumb, #gallery-post").owlCarousel({
 
 		navigation : true,
@@ -71,7 +71,7 @@ jQuery(function ($) { "use strict";
 		navigationText : ["<i class='fa fa-angle-left fa-2x'></i>","<i class='fa fa-angle-right fa-2x'></i>"]
 
 	});
-	
+
 	$("#features").owlCarousel({
 		navigation : false,
 		pagination : true,
@@ -90,7 +90,7 @@ jQuery(function ($) { "use strict";
 	$("#navigation").sticky({
 		topSpacing : 0
 	});
-	
+
 	$('#nav').onePageNav({
 		currentClass: 'current',
 		changeHash: false,
@@ -99,22 +99,22 @@ jQuery(function ($) { "use strict";
 		filter: '',
 		easing: 'easeInOutExpo'
 	});
-	
+
 
 
 	/* ========================================================================= */
 	/*	Fix Slider Height
-	/* ========================================================================= */	
+	/* ========================================================================= */
 
 	var slideHeight = $(window).height();
-	
+
 	$('#slitSlider, .sl-slider, .sl-content-wrapper').css('height',slideHeight);
 
 	$(window).resize(function(){'use strict',
 		$('#slitSlider, .sl-slider, .sl-content-wrapper').css('height',slideHeight);
 	});
-	
-	
+
+
 
 	/* ========================================================================= */
 	/*	Timer count
@@ -165,12 +165,12 @@ jQuery(function ($) { "use strict";
 			}
 		})
 	});
-	
-	
+
+
 	/* ========================================================================= */
 	/*	Twitter Feed
 	/* ========================================================================= */
-	
+
 	$(".tweet").twittie({
         dateFormat: "%b. %d, %Y",
         template: "{{tweet}}",
@@ -185,12 +185,12 @@ jQuery(function ($) { "use strict";
 	$('#og-grid').mixItUp(); // Portfolio filter
 
 	Grid.init(); //Portfolio Grid Expand
-	
-	
+
+
 	/* ========================================================================= */
 	/*	Testimonial Carousel
 	/* =========================================================================  */
- 
+
 	//Init the carousel
 	$("#testimonials").owlCarousel({
 		slideSpeed: 500,
@@ -223,10 +223,10 @@ jQuery(function ($) { "use strict";
 		where VARIABLE is the variable we are checking (like name, email),
 		length is a JavaScript function to get the number of characters.
 		And as you can see if the num of characters is 0 we set the error
-		variable to true and show the name_error div with the fadeIn effect. 
+		variable to true and show the name_error div with the fadeIn effect.
 		if it's not 0 then we fadeOut the div( that's if the div is shown and
-		the error is fixed it fadesOut. 
-		
+		the error is fixed it fadesOut.
+
 		The only difference from these checks is the email checking, we have
 		email.indexOf('@') which checks if there is @ in the email input field.
 		This JavaScript function will return -1 if no occurrence have been found.*/
@@ -292,7 +292,7 @@ jQuery(function ($) { "use strict";
 
 	function initialize() {
 
-		var myLatLng = new google.maps.LatLng(33.014341, -80.084767);
+		var myLatLng = new google.maps.LatLng(38.902270, -77.043097);
 
 		var roadAtlasStyles = [{
 			"featureType": "landscape",
@@ -418,7 +418,7 @@ jQuery(function ($) { "use strict";
 		offset: 120
 	});
 	wow.init();
-	
+
 
 /* ========================================================================= */
 /*	Home page Slider
@@ -431,9 +431,9 @@ $(function() {
 		var $navArrows = $( '#nav-arrows' ),
 			$nav = $( '#nav-dots > span' ),
 			slitslider = $( '#slitSlider' ).slitslider( {
-			
+
 			    speed : 1600,
-			
+
 				onBeforeChange : function( slide, pos ) {
 
 					$nav.removeClass( 'nav-dot-current' );
@@ -443,7 +443,7 @@ $(function() {
 			} ),
 
 			init = function() {
-				initEvents();				
+				initEvents();
 			},
 			initEvents = function() {
 				// add navigation events
@@ -452,23 +452,23 @@ $(function() {
 					return false;
 				} );
 
-				$navArrows.children( ':first' ).on( 'click', function() {					
+				$navArrows.children( ':first' ).on( 'click', function() {
 					slitslider.previous();
 					return false;
 				});
 
-				$nav.each( function( i ) {				
-					$( this ).on( 'click', function( event ) {						
-						var $dot = $( this );						
+				$nav.each( function( i ) {
+					$( this ).on( 'click', function( event ) {
+						var $dot = $( this );
 						if( !slitslider.isActive() ) {
 							$nav.removeClass( 'nav-dot-current' );
-							$dot.addClass( 'nav-dot-current' );						
+							$dot.addClass( 'nav-dot-current' );
 						}
-						
+
 						slitslider.jump( i + 1 );
 						return false;
-					
-					});					
+
+					});
 				});
 			};
 			return { init : init };
@@ -497,4 +497,3 @@ function parallaxInit() {
 $(window).bind("load", function () {
     parallaxInit()
 });
-                            
