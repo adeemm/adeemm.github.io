@@ -33,7 +33,7 @@
 							<ul>
 								<li><a href="https://github.com/adeemm" target="_blank">Github</a></li>
 								<li><a href="#snap"><i class="fa fa-snapchat-ghost fa-2x" style="position: relative; top: 0.33rem; right: 0.25rem;"></i> Snapchat</a></li>
-								<li><a href="#essay">Essay Typer</a></li>
+								<li><a href="#essays">Essay Typer</a></li>
 								<!-- <li><a href="#elements">Elements</a></li> -->
 							</ul>
 						</nav>
@@ -54,7 +54,7 @@
 							</article>
 
 						<!-- Essay -->
-							<article id="essay">
+							<article id="essays">
 								<h2 class="major">Essay Typer</h2>
 								<p>
 									<div class="field">
@@ -63,6 +63,8 @@
 										<center><button onclick="getWiki(document.getElementById('essaySubject').value)">Type Essay</button></center>
 									</div>
 									<hr id="essayBar" style="display:none;" />
+									<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
+									<p id="essayError" style="display:none;"></p>
 									<div id="output"></div>
 								</p>
 							</article>

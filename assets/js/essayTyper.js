@@ -12,9 +12,6 @@ function getWiki(page) {
           dataType: "json",
           success: function (data, textStatus, jqXHR) {
               var markup = data.parse.text["*"];
-
-              console.log(markup);
-
               var blurb = $('<div></div>').html(markup);
 
               // remove links
@@ -23,15 +20,39 @@ function getWiki(page) {
               // remove references
               blurb.find('sup').remove();
 
+              //remove infobox
+              blurb.find('table').remove();
+
               // remove cite error
               blurb.find('.mw-ext-cite-error').remove();
 
-              var check = markup.indexOf("redirectText");
+              $('#output').html("");
+              document.getElementById('essayAmbig').style.display = 'none';
+              document.getElementById('essayError').style.display = 'none';
+              document.getElementById('essayBar').style.display = 'block';
 
-              if(check == -1)
-              {
-                document.getElementById('essayBar').style.display = 'block';
-                $('#output').html($(blurb).find('p'));
+              var redirectCheck = markup.indexOf("redirectText");
+
+              if(redirectCheck == -1){
+                var ambigCheck = markup.indexOf("refer to:");
+
+                if(ambigCheck == -1) {
+                  $('#output').html($(blurb).find('p'));
+                }
+
+                else {
+                  document.getElementById('essayAmbig').style.display = 'block';
+
+                  blurb.find('div').remove('.toc');
+
+                  blurb.find('p').remove();
+
+                  blurb.find('span').remove('.mw-editsection');
+
+                  console.log(blurb);
+
+                  $('#output').html(blurb);
+                }
               }
 
               else {
@@ -41,6 +62,8 @@ function getWiki(page) {
               }
           },
           error: function (errorMessage) {
+            document.getElementById('essayError').style.display = 'block';
+            document.getElementById('essayError').innerHTML = errorMessage;
           }
       });
   }
