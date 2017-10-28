@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css?family=Kalam');
+@import url('https://fonts.googleapis.com/css?family=Amaranth');
+
+.reveal .backgrounds {
+  background-image: linear-gradient(45deg, #c86464 0%, #825ac8 100%);
+}
+
+.reveal .controls .navigate-right {
+  border-left-color: white;
+}
+
+.reveal .controls .navigate-left {
+  border-right-color: white;
+}
+
+.reveal .titlePage {
+  font-family: 'Kalam', cursive;
+}
+
+.reveal h1 {
+  font-size: 64px;
+  font-weight: bold;
+  color: white;
+  margin-top: 25%;
+  margin-bottom: 84px;
+}
+
+.reveal h2 {
+  font-family: 'Amaranth', sans-serif;
+  font-size: 42px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 52px;
+}
+
+.reveal p {
+  font-family: 'Amaranth', sans-serif;
+  font-size: 32px;
+  color: white;
+}
