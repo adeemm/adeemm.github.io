@@ -54,6 +54,18 @@
   border-right-color: white;
 }
 
+.reveal .controls .navigate-up {
+  border-bottom-color: white;
+}
+
+.reveal .controls .navigate-down {
+  border-top-color: white;
+}
+
+.reveal .progress span {
+  background-color: white;
+}
+
 .reveal .titlePage {
   font-family: 'Kalam', cursive;
 }
@@ -78,4 +90,77 @@
   font-family: 'Amaranth', sans-serif;
   font-size: 32px;
   color: white;
+}
+
+.reveal li {
+  padding-bottom: 20px;
+}
+
+.reveal ul {
+  text-align: left;
+  font-family: 'Amaranth', sans-serif;
+  font-size: 32px;
+  color: white;
+}
+
+.reveal .sub {
+  margin-left: 30px;
+}
+
+/*Timeline */
+.timeline {
+	position: relative;
+	display: block;
+	height: 4px;
+	background: white;
+}
+
+.timeline::before, .timeline::after {
+	content: "";
+	position: absolute;
+	top: -8px;
+	display: block;
+	width: 0;
+	height: 0;
+  border-radius: 10px;
+	border: 10px solid white;
+}
+
+.timeline::before {
+  left: -18px;
+  top: -8px;
+}
+
+.timeline::after {
+	right: -10px;
+	border: 10px solid transparent;
+	border-right: 0;
+	border-left: 20px solid white;
+  border-radius: 3px;
+}
+
+.timeText {
+	position: relative;
+	top: -77px;
+	display: inline-block;
+	float: left;
+	width: 150px;
+	transform: rotate(-45deg);
+  font-family: 'Amaranth', sans-serif !important;
+  color: white;
+  font-size: 16px !important;
+	/*font: bold 14px arial;*/
+}
+
+.timeText::before {
+	content: "";
+	position: absolute;
+	top: -2px;
+	left: -29px;
+	display: block;
+	width: 6px;
+	height: 6px;
+	border: 4px solid white;
+	border-radius: 10px;
+	background: white;
 }
