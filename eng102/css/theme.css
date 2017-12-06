@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Kalam');
+@import url('https://fonts.googleapis.com/css?family=Spectral+SC');
 @import url('https://fonts.googleapis.com/css?family=Amaranth');
 
 .reveal .backgrounds {
@@ -67,15 +67,19 @@
 }
 
 .reveal .titlePage {
-  font-family: 'Kalam', cursive;
+  font-family: 'Spectral SC', serif;
+}
+
+.reveal a {
+  color: white;
 }
 
 .reveal h1 {
   font-size: 64px;
   font-weight: bold;
   color: white;
-  margin-top: 25%;
-  margin-bottom: 84px;
+  margin-top: 1%;
+  margin-bottom: 250px;
 }
 
 .reveal h2 {
@@ -83,7 +87,7 @@
   font-size: 42px;
   font-weight: bold;
   color: white;
-  margin-bottom: 52px;
+  margin-bottom: 32px;
 }
 
 .reveal p {
@@ -96,6 +100,13 @@
   padding-bottom: 20px;
 }
 
+.reveal ol {
+  text-align: left;
+  font-family: 'Amaranth', sans-serif;
+  font-size: 32px;
+  color: white;
+}
+
 .reveal ul {
   text-align: left;
   font-family: 'Amaranth', sans-serif;
@@ -105,62 +116,4 @@
 
 .reveal .sub {
   margin-left: 30px;
-}
-
-/*Timeline */
-.timeline {
-	position: relative;
-	display: block;
-	height: 4px;
-	background: white;
-}
-
-.timeline::before, .timeline::after {
-	content: "";
-	position: absolute;
-	top: -8px;
-	display: block;
-	width: 0;
-	height: 0;
-  border-radius: 10px;
-	border: 10px solid white;
-}
-
-.timeline::before {
-  left: -18px;
-  top: -8px;
-}
-
-.timeline::after {
-	right: -10px;
-	border: 10px solid transparent;
-	border-right: 0;
-	border-left: 20px solid white;
-  border-radius: 3px;
-}
-
-.timeText {
-	position: relative;
-	top: -77px;
-	display: inline-block;
-	float: left;
-	width: 150px;
-	transform: rotate(-45deg);
-  font-family: 'Amaranth', sans-serif !important;
-  color: white;
-  font-size: 16px !important;
-	/*font: bold 14px arial;*/
-}
-
-.timeText::before {
-	content: "";
-	position: absolute;
-	top: -2px;
-	left: -29px;
-	display: block;
-	width: 6px;
-	height: 6px;
-	border: 4px solid white;
-	border-radius: 10px;
-	background: white;
 }
