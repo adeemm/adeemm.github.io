@@ -1597,3 +1597,43 @@
 		body.is-loading #footer {
 			opacity: 0;
 		}
+
+/* Accordion */
+
+	.accordion {
+	  list-style-type: none;
+	  border-top: 1px solid #ffffff;
+	  border-left: 1px solid #ffffff;
+	  border-right: 1px solid #ffffff;
+	  margin: 0.5rem 0 1rem 0;
+	  padding-left: 0;
+	}
+
+	.accord {
+		padding-left: 0;
+	}
+
+	.accordion-header {
+	  border-bottom: 1px solid #ffffff;
+	  cursor: pointer;
+	  min-height: 3rem;
+	  line-height: 3rem;
+	  padding: 0 1rem;
+	}
+
+	.accordion-header:after {
+	    content: '\02795'; /* Unicode "plus" character */
+	    font-size: 0.6rem;
+	    color: #ffffff;
+	    float: right;
+	}
+
+	.accordion-header.active:after {
+	    content: "\2796"; /* Unicode "minus" character */
+	}
+
+	.accordion-body {
+	  display: none;
+	  padding: 2rem;
+	  border-bottom: 1px solid #ffffff;
+	}
