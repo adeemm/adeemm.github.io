@@ -132,7 +132,7 @@
 								<h2 class="major">What is it?</h2>
 								<p>
 									This is a way to transfer your files directly from one device to another. To establish a connection to
-									eachother, you and the recipient exchange a set of generated "codes". After that, you can send the recipient
+									each other, you and the recipient exchange a set of generated "codes". After that, you can send the recipient
 									as many files as you want (until you close your browser).
 								</p>
 								<h2 class="major">Why?</h2>
@@ -143,14 +143,14 @@
 								<h2 class="major">How?</h2>
 								<p>
 									This implementation uses WebRTC to establish a connection between browsers and is (almost) completely serverless.
-									In order for peers to discover eachother, a STUN (Session Traversal Utilities for NAT) server must be used. This
+									In order for peers to discover each other, a STUN (Session Traversal Utilities for NAT) server must be used. This
 									server finds a network path between the two peers by implementing the ICE (Interactive Connectivity Establishment)
 									protocol. After finding a path, the peer initiating the connection generates an SDP (Session Description Protocol)
-									offer, which must be sent to the other peer. After the recipient recieves the first peer's offer, they generate a
-									SDP answer, which must be sent back to the firt peer. After both peers recieve eachother's handshake, the connection
+									offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they generate a
+									SDP answer, which must be sent back to the first peer. After both peers receive each other's handshake, the connection
 									can be established and data can start passing directly between them. Normally, a signaling server is used to send the
 									initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
-									server instance of course), so I decided to let the users send this data directly to eachother. To make this feasible,
+									server instance of course), so I decided to let the users send this data directly to each other. To make this feasible,
 									the handshake had to be heavily compressed. The data was first split into smaller chunks, and each chunk was encoded
 									and assigned a key. Each "code" generated is actually the key linked to a chunk of encoded JSON handshake data.
 								</p>
