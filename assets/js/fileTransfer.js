@@ -397,6 +397,7 @@ function onConnect() {
 // Hide file upload form and show handshake elements after disconnect
 function onDisconnect() {
   reset();
+  location.hash = '#fileMenu';
 }
 
 
