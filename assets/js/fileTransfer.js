@@ -8,7 +8,6 @@ var incomingFileData;
 var peer;
 
 
-
 // Initialize peer and setup its event handlers
 function initPeer() {
   peer = new SimplePeer({ initiator: location.hash === '#sendFiles', trickle: false });
@@ -17,8 +16,10 @@ function initPeer() {
     var handshake = JSON.stringify(data);
     var chunks = chunkString(handshake, 200);
     var hashes = chunks.map(generateHash);
-    var generatedHash = hashes.join('-');
-    updateHashDisplay(peer.initiator, generatedHash);
+    var generatedHashes = hashes.join('-');
+    var condensed = generateHash(generatedHashes);
+    updateHashDisplay(peer.initiator, condensed);
+    toggleLoad();
   });
 
   peer.on('connect', function () {
@@ -45,25 +46,39 @@ function initPeer() {
 }
 
 
-
 // Check browser WebRTC support
 function isWebRTCSupported() {
   var PeerConn = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
   var IceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
   var SessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
-  var UserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia || navigator.mozGetUserMedia;
-  return !!PeerConn && !!IceCandidate && !!SessionDescription && !!UserMedia;
+
+  return !!PeerConn && !!IceCandidate && !!SessionDescription;
 }
 
 
 // Check browser WebRTC support and throw error if unsupported
 function checkWebRTCSupport() {
+  var Safari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && navigator.userAgent.indexOf('CriOS') == -1 && navigator.userAgent.indexOf('FxiOS') == -1;
+
   if (!isWebRTCSupported()) {
     displayError('WebRTC is not supported in your browser! Try using Firefox or Chrome');
   }
   else {
-    reset();
-    initPeer();
+    // Safari doesn't disclose host ice canidates until you trust the site with media permissions
+    if (Safari) {
+      displayError('Due to technological limitations by Apple, this may only work in Safari after granting permission to your webcam & microphone. If you don&#39;t trust this site, try using Firefox or Chrome instead.');
+      toggleLoad();
+      navigator.mediaDevices.getUserMedia({audio: true, video: true})
+      .then(function(stream) {
+        reset();
+        initPeer();
+      });
+    }
+    else {
+      reset();
+      toggleLoad();
+      initPeer();
+    }
   }
 }
 
@@ -130,7 +145,6 @@ function formatBytes(bytes, decimals) {
 }
 
 
-
 // Return a short, user-friendly hash from long SDP handshake data
 function generateHash(signal) {
   var shorteningAPI = 'http://ulvis.net/API/write/get?url=';
@@ -144,7 +158,7 @@ function generateHash(signal) {
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
 
-  // TODO: fix synchronous call and add additional handler in sucess function maybe
+  // TODO: fix synchronous call
   var hash;
 
   $.ajax({
@@ -152,7 +166,13 @@ function generateHash(signal) {
     type: 'GET',
     async: false,
     success: function(res) {
-      hash = res.data.id;
+      try {
+        hash = res.data.id;
+      }
+      catch (err) {
+        alert('Error processing share code! Please make sure you typed it correctly.');
+        toggleLoad();
+      }
     },
     error: function(jqXHR, textStatus, errorThrown) {
       displayError('Failed to generate share code! Try again later');
@@ -171,7 +191,7 @@ function convertHash(hash) {
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
 
-  // TODO: fix synchronous call and add additional handler in sucess function maybe
+  // TODO: fix synchronous call
   var decoded;
 
   $.ajax({
@@ -179,9 +199,15 @@ function convertHash(hash) {
     type: 'GET',
     async: false,
     success: function(res) {
-      var redirect = res.data.full;
-      var hostname = getURLHostname(redirect);
-      decoded = decodeBase64(hostname);
+      try {
+        var redirect = res.data.full;
+        var hostname = getURLHostname(redirect);
+        decoded = decodeBase64(hostname);
+      }
+      catch (err) {
+        alert('Error processing share code! Please make sure you typed it correctly.');
+        toggleLoad();
+      }
     },
     error: function(jqXHR, textStatus, errorThrown) {
       displayError('Failed to decode share code! Try again later');
@@ -195,8 +221,12 @@ function convertHash(hash) {
 
 // Load hash from the specified text input element
 function loadHash(textID) {
-  // Get delimited data from text input
-  var delimited = document.querySelector(textID).value;
+  toggleLoad();
+
+  var condensed = document.querySelector(textID).value;
+
+  // Get delimited data (other hashes) from the condensed hash
+  var delimited = convertHash(condensed);
 
   // Split delimited data into an array
   var hashes = delimited.split('-');
@@ -223,24 +253,37 @@ function sendFile() {
   var file = fileList[0];
   var currentChunk = 0;
 
-  // Send metadata first
-  peer.send(JSON.stringify({
-      fileName: file.name,
-      fileSize: file.size
-  }));
+  toggleLoad();
 
-  // Handle fileReader load event
-  fileReader.onload = function() {
-    peer.send(fileReader.result);
-    currentChunk++;
+  try {
+    // Send metadata first
+    peer.send(JSON.stringify({
+        fileName: file.name,
+        fileSize: file.size
+    }));
 
-    // Check if last was read
-    if(BYTES_PER_CHUNK * currentChunk < file.size) {
-        readNextChunk(fileReader, file, currentChunk);
-    }
-  };
+    // Handle fileReader load event
+    fileReader.onload = function() {
+      peer.send(fileReader.result);
+      currentChunk++;
 
-  readNextChunk(fileReader, file, currentChunk);
+      // Read the file buffer until we reach the end
+      if(BYTES_PER_CHUNK * currentChunk < file.size) {
+          readNextChunk(fileReader, file, currentChunk);
+      }
+      else {
+        toggleLoad();
+      }
+    };
+
+    readNextChunk(fileReader, file, currentChunk);
+  }
+  catch (err) {
+    toggleLoad();
+    alert('Error sending file!');
+    console.log(err);
+  }
+
 }
 
 
@@ -302,7 +345,6 @@ function finishDownload() {
 }
 
 
-
 // Event handler for menu link click (navigate before initPeer() checks location hash)
 $('#uploadFileLink').on('click', function(ev) {
   window.location = ev.target.href;
@@ -313,30 +355,8 @@ $('#uploadFileLink').on('click', function(ev) {
 // Event handler for menu link click (navigate before initPeer() checks location hash)
 $('#downloadFileLink').on('click', function(ev) {
   window.location = ev.target.href;
+  toggleLoad();
   checkWebRTCSupport();
-});
-
-
-// Event handler for hash input
-$('#receiveHashInput').on('input', function(ev) {
-  var input = document.querySelector('#receiveHashInput');
-
-  // Automatically add '-' character to input
-  var value = input.value.split('-').join('');
-  if((value.length > 0) && (value.length % 3 == 0)) {
-    input.value += '-'
-  }
-});
-
-// Event handler for hash input
-$('#shareHashInput').on('input', function(ev) {
-  var input = document.querySelector('#shareHashInput');
-
-  // Automatically add '-' character to input
-  var value = input.value.split('-').join('');
-  if((value.length > 0) && (value.length % 3 == 0)) {
-    input.value += '-'
-  }
 });
 
 
@@ -346,7 +366,7 @@ $(window).unload(function () {
 });
 
 
-// Handle hiding and showing hash inputs
+// Handle hiding and showing of hash input elements
 function updateHashDisplay(initiator, generatedHash) {
   if (initiator) {
     var output = document.querySelector('#shareHashOutput');
@@ -361,16 +381,20 @@ function updateHashDisplay(initiator, generatedHash) {
 }
 
 
-// Hide handshake elements and display file upload form after connected
+// Hide handshake elements and display file upload form after connect
 function onConnect() {
   document.querySelector('#sendOffer').style.display = 'none';
   document.querySelector('#sendAnswer').style.display = 'none';
   document.querySelector('#sendFileForm').style.display = 'block';
   document.querySelector('#downloadForm').style.display = 'block';
+
+  if (peer.initiator) {
+    toggleLoad();
+  }
 }
 
 
-// Hide file upload form and show handshake elements after disconnected
+// Hide file upload form and show handshake elements after disconnect
 function onDisconnect() {
   reset();
 }
@@ -398,11 +422,28 @@ function displayError(message) {
 function reset() {
   document.querySelector('#sendOffer').style.display = 'block';
   document.querySelector('#getOffer').style.display = 'block';
+  document.querySelector('#shareFileForm').style.display = 'block';
+  document.querySelector('#receiveFileForm').style.display = 'block';
+
   document.querySelector('#sendAnswer').style.display = 'none';
+  document.querySelector('#shareFileError').style.display = 'none';
+  document.querySelector('#receiveFileError').style.display = 'none';
+
+  document.querySelector('#shareHashOutput').value = '';
+  document.querySelector('#shareHashInput').value = '';
+  document.querySelector('#receiveHashInput').value = '';
+  document.querySelector('#receiveHashOutput').value = '';
+
   document.querySelector('#sendFileForm').style.display = 'none';
   document.querySelector('#downloadForm').style.display = 'none';
 
   if (!!peer) {
     peer.destroy();
   }
+}
+
+
+// Toggles the loading indicator
+function toggleLoad() {
+  $('#loading').toggle();
 }

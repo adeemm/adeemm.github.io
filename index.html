@@ -16,6 +16,9 @@
 	</head>
 	<body>
 
+		<!-- File Share loader -->
+		<div class="loading" id="loading" style="display:none;">loading</div>
+
 		<!-- Wrapper -->
 			<div id="wrapper">
 
@@ -32,9 +35,9 @@
 						</div>
 						<nav>
 							<ul>
-								<!-- <li><a href="#fileMenu">Share Files</a></li>  -->
 								<li><a href="#projects">My Projects</a></li>
 								<li><a href="#essays">Essay Typer</a></li>
+								<li><a href="#fileMenu">P2P File Sharing</a></li>
 								<!-- <li><a href="#elements">Elements</a></li> -->
 							</ul>
 						</nav>
@@ -133,7 +136,8 @@
 								<p>
 									This is a way to transfer your files directly from one device to another. To establish a connection to
 									each other, you and the recipient exchange a set of generated "codes". After that, you can send the recipient
-									as many files as you want (until you close your browser).
+									as many files as you want (until you close your browser). Also note that there's a 15 second timeout while
+									connecting, so type fast! (This limit wasn't set by me, it's a feature/limitation of Google Chrome)
 								</p>
 								<h2 class="major">Why?</h2>
 								<p>
@@ -151,8 +155,10 @@
 									can be established and data can start passing directly between them. Normally, a signaling server is used to send the
 									initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
 									server instance of course), so I decided to let the users send this data directly to each other. To make this feasible,
-									the handshake had to be heavily compressed. The data was first split into smaller chunks, and each chunk was encoded
-									and assigned a key. Each "code" generated is actually the key linked to a chunk of encoded JSON handshake data.
+									the handshake had to be heavily compressed. First, the data was first split into smaller chunks, and each chunk was assigned a key.
+									Finally, the combination of shorter keys are assigned to a single key. Each "code" generated is actually a key linked to a
+									chunk of encoded JSON handshake data. If the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
+									so sending data directly between the two peers isn't possible.
 								</p>
 							</article>
 
@@ -167,7 +173,7 @@
 												<input type="text" id="shareHashOutput" value="" placeholder="Generating.... Please wait a moment"/>
 												<br><br>
 												<label for="shareHashInput">Then enter the code they send back:</label>
-												<input type="text" id="shareHashInput" value="" placeholder="XXX-XXX-XXX"/>
+												<input type="text" id="shareHashInput" value="" placeholder="XXX"/>
 												<br>
 												<button type="button" onclick="loadHash('#shareHashInput')">Submit Code</button>
 											</div>
@@ -200,7 +206,7 @@
 										<center>
 											<div id="getOffer">
 												<label for="receiveHashInput">Enter your code here:</label>
-												<input type="text" id="receiveHashInput" value="" placeholder="XXX-XXX-XXX-XXX"/>
+												<input type="text" id="receiveHashInput" value="" placeholder="XXX"/>
 												<br>
 												<button type="button" onclick="loadHash('#receiveHashInput')">Submit Code</button>
 											</div>
