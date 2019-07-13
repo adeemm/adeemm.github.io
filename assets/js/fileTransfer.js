@@ -13,13 +13,14 @@ function initPeer() {
   peer = new SimplePeer({ initiator: location.hash === '#sendFiles', trickle: false });
 
   peer.on('signal', function (data) {
+    toggleLoad(true);
     var handshake = JSON.stringify(data);
     var chunks = chunkString(handshake, 200);
     var hashes = chunks.map(generateHash);
     var generatedHashes = hashes.join('-');
     var condensed = generateHash(generatedHashes);
     updateHashDisplay(peer.initiator, condensed);
-    toggleLoad();
+    toggleLoad(false);
   });
 
   peer.on('connect', function () {
@@ -67,7 +68,6 @@ function checkWebRTCSupport() {
     // Safari doesn't disclose host ice canidates until you trust the site with media permissions
     if (Safari) {
       displayError('Due to technological limitations by Apple, this may only work in Safari after granting permission to your webcam & microphone. If you don&#39;t trust this site, try using Firefox or Chrome instead.');
-      toggleLoad();
       navigator.mediaDevices.getUserMedia({audio: true, video: true})
       .then(function(stream) {
         reset();
@@ -76,7 +76,6 @@ function checkWebRTCSupport() {
     }
     else {
       reset();
-      toggleLoad();
       initPeer();
     }
   }
@@ -171,7 +170,7 @@ function generateHash(signal) {
       }
       catch (err) {
         alert('Error processing share code! Please make sure you typed it correctly.');
-        toggleLoad();
+        toggleLoad(false);
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
@@ -206,7 +205,7 @@ function convertHash(hash) {
       }
       catch (err) {
         alert('Error processing share code! Please make sure you typed it correctly.');
-        toggleLoad();
+        toggleLoad(false);
       }
     },
     error: function(jqXHR, textStatus, errorThrown) {
@@ -221,8 +220,6 @@ function convertHash(hash) {
 
 // Load hash from the specified text input element
 function loadHash(textID) {
-  toggleLoad();
-
   var condensed = document.querySelector(textID).value;
 
   // Get delimited data (other hashes) from the condensed hash
@@ -253,7 +250,7 @@ function sendFile() {
   var file = fileList[0];
   var currentChunk = 0;
 
-  toggleLoad();
+  toggleLoad(true);
 
   try {
     // Send metadata first
@@ -272,14 +269,14 @@ function sendFile() {
           readNextChunk(fileReader, file, currentChunk);
       }
       else {
-        toggleLoad();
+        toggleLoad(false);
       }
     };
 
     readNextChunk(fileReader, file, currentChunk);
   }
   catch (err) {
-    toggleLoad();
+    toggleLoad(false);
     alert('Error sending file!');
     console.log(err);
   }
@@ -347,18 +344,16 @@ function finishDownload() {
 
 // Event handler for menu link click (navigate before initPeer() checks location hash)
 $('#uploadFileLink').on('click', function(ev) {
+  toggleLoad(true);
   window.location = ev.target.href;
   checkWebRTCSupport();
 });
-
 
 // Event handler for menu link click (navigate before initPeer() checks location hash)
 $('#downloadFileLink').on('click', function(ev) {
   window.location = ev.target.href;
-  toggleLoad();
   checkWebRTCSupport();
 });
-
 
 // Event handler for unloading page
 $(window).unload(function () {
@@ -368,6 +363,7 @@ $(window).unload(function () {
 
 // Handle hiding and showing of hash input elements
 function updateHashDisplay(initiator, generatedHash) {
+  toggleLoad(true);
   if (initiator) {
     var output = document.querySelector('#shareHashOutput');
     output.value = generatedHash;
@@ -388,9 +384,7 @@ function onConnect() {
   document.querySelector('#sendFileForm').style.display = 'block';
   document.querySelector('#downloadForm').style.display = 'block';
 
-  if (peer.initiator) {
-    toggleLoad();
-  }
+  toggleLoad(false);
 }
 
 
@@ -416,6 +410,8 @@ function displayError(message) {
   document.querySelector('#receiveFileForm').style.display = 'none';
   document.querySelector('#receiveFileError').style.display = 'block';
   document.querySelector('#receiveFileErrorMessage').innerHTML = '<h3>ERROR:</h3>' + message;
+
+  toggleLoad(false);
 }
 
 
@@ -445,6 +441,6 @@ function reset() {
 
 
 // Toggles the loading indicator
-function toggleLoad() {
-  $('#loading').toggle();
+function toggleLoad(shouldShow) {
+  $('#loading').toggle(shouldShow);
 }

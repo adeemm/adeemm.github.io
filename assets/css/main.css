@@ -1639,6 +1639,16 @@
 	}
 
 
+/* Responsive-break */
+
+	@media screen and (min-width: 480px) {
+    .responsive-break {
+			display: none;
+			line-height: 150%;
+		}
+  }
+
+
 /* Loader */
 
 .loading {
