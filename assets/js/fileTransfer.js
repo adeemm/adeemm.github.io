@@ -12,20 +12,38 @@ var peer;
 function initPeer() {
   peer = new SimplePeer({ initiator: location.hash === '#sendFiles', trickle: false });
 
-  peer.on('signal', function (data) {
+
+  peer.on('signal', async function (data) {
     toggleLoad(true);
+
+    // Get the handshake data, split it into chunks, and generate each chunk's hash
     var handshake = JSON.stringify(data);
     var chunks = chunkString(handshake, 200);
     var hashes = chunks.map(generateHash);
+
+    // Asynchronously generate each chunk's hash,
+    // Then replace the promise array with each promise's value
+    await Promise.all(hashes)
+      .then(values => hashes = values)
+      .catch(function(err) {
+        alert(err);
+        toggleLoad(false);
+        return;
+    });
+
+    // Join each hash together and generate one final condensed hash
     var generatedHashes = hashes.join('-');
-    var condensed = generateHash(generatedHashes);
+    var condensed = await generateHash(generatedHashes).catch(err => alert(err));
+
     updateHashDisplay(peer.initiator, condensed);
     toggleLoad(false);
   });
 
+
   peer.on('connect', function () {
     onConnect();
   })
+
 
   peer.on('data', function (data) {
     if(downloadInProgress === false) {
@@ -36,9 +54,11 @@ function initPeer() {
     }
   });
 
+
   peer.on('close', function () {
     onDisconnect();
   });
+
 
   peer.on('error', function (err) {
     console.log('Error:', err);
@@ -157,29 +177,26 @@ function generateHash(signal) {
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
 
-  // TODO: fix synchronous call
-  var hash;
-
-  $.ajax({
-    url: corsProxy + shorteningAPI + fakeURL + '&private=1',
-    type: 'GET',
-    async: false,
-    success: function(res) {
-      try {
-        hash = res.data.id;
+  // Resolve or reject the returned promise based on the ajax response
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      url: corsProxy + shorteningAPI + fakeURL + '&private=1',
+      type: 'GET',
+      success: function(res) {
+        try {
+          var hash = res.data.id;
+          resolve(hash);
+        }
+        catch (err) {
+          reject('Error processing share code! Please make sure you typed it correctly.');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        reject('Failed to generate share code! Try again later');
+        console.log(jqXHR);
       }
-      catch (err) {
-        alert('Error processing share code! Please make sure you typed it correctly.');
-        toggleLoad(false);
-      }
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      displayError('Failed to generate share code! Try again later');
-      console.log(jqXHR);
-    }
+    });
   });
-
-  return hash;
 }
 
 
@@ -190,40 +207,37 @@ function convertHash(hash) {
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
 
-  // TODO: fix synchronous call
-  var decoded;
-
-  $.ajax({
-    url: corsProxy + shorteningAPI + hash + '&private=1',
-    type: 'GET',
-    async: false,
-    success: function(res) {
-      try {
-        var redirect = res.data.full;
-        var hostname = getURLHostname(redirect);
-        decoded = decodeBase64(hostname);
+  // Resolve or reject the returned promise based on the ajax response
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      url: corsProxy + shorteningAPI + hash + '&private=1',
+      type: 'GET',
+      success: function(res) {
+        try {
+          var redirect = res.data.full;
+          var hostname = getURLHostname(redirect);
+          var decoded = decodeBase64(hostname);
+          resolve(decoded);
+        }
+        catch (err) {
+          reject('Error processing share code! Please make sure you typed it correctly.');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        reject('Failed to decode share code! Try again later');
+        console.log(jqXHR);
       }
-      catch (err) {
-        alert('Error processing share code! Please make sure you typed it correctly.');
-        toggleLoad(false);
-      }
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      displayError('Failed to decode share code! Try again later');
-      console.log(jqXHR);
-    }
+    });
   });
-
-  return decoded;
 }
 
 
 // Load hash from the specified text input element
-function loadHash(textID) {
-  var condensed = document.querySelector(textID).value;
+async function loadHash(condensed) {
+  toggleLoad(true);
 
   // Get delimited data (other hashes) from the condensed hash
-  var delimited = convertHash(condensed);
+  var delimited = await convertHash(condensed);
 
   // Split delimited data into an array
   var hashes = delimited.split('-');
@@ -233,12 +247,21 @@ function loadHash(textID) {
 
   // Convert each element back into a JSON chunk
   var converts = filteredHashes.map(convertHash);
+  await Promise.all(converts)
+    .then(values => converts = values)
+    .catch(function(err) {
+      alert(err);
+      toggleLoad(false);
+      return;
+  });
 
   // Join each chunk back together
   var handshake = converts.join('');
 
   // Handle the handshake data
   peer.signal(JSON.parse(handshake));
+
+  toggleLoad(false);
 }
 
 
@@ -280,7 +303,6 @@ function sendFile() {
     alert('Error sending file!');
     console.log(err);
   }
-
 }
 
 
@@ -300,7 +322,7 @@ function handleMetadata(data) {
   downloadInProgress = true;
 
   var size = formatBytes(incomingFileInfo.fileSize);
-  document.querySelector('#downloadInfo').innerHTML = 'Downloading ' + incomingFileInfo.fileName + ' - ' + size;
+  $('#downloadInfo').html('Downloading ' + incomingFileInfo.fileName + ' - ' + size);
 }
 
 
@@ -342,18 +364,20 @@ function finishDownload() {
 }
 
 
-// Event handler for menu link click (navigate before initPeer() checks location hash)
+// Event handler for menu link click (navigates before initPeer() checks location hash)
 $('#uploadFileLink').on('click', function(ev) {
   toggleLoad(true);
   window.location = ev.target.href;
   checkWebRTCSupport();
 });
 
-// Event handler for menu link click (navigate before initPeer() checks location hash)
+
+// Event handler for menu link click (navigates before initPeer() checks location hash)
 $('#downloadFileLink').on('click', function(ev) {
   window.location = ev.target.href;
   checkWebRTCSupport();
 });
+
 
 // Event handler for unloading page
 $(window).unload(function () {
@@ -361,34 +385,33 @@ $(window).unload(function () {
 });
 
 
-// Handle hiding and showing of hash input elements
+// Handle showing and hiding of hash input elements
 function updateHashDisplay(initiator, generatedHash) {
   toggleLoad(true);
+
   if (initiator) {
-    var output = document.querySelector('#shareHashOutput');
-    output.value = generatedHash;
+    $('#shareHashOutput').val(generatedHash);
   }
   else {
-    document.querySelector('#getOffer').style.display = 'none';
-    var output = document.querySelector('#receiveHashOutput');
-    output.value = generatedHash;
-    document.querySelector('#sendAnswer').style.display = 'block';
+    $('#getOffer').css('display', 'none');
+    $('#receiveHashOutput').val(generatedHash);
+    $('#sendAnswer').css('display', 'block');
   }
 }
 
 
-// Hide handshake elements and display file upload form after connect
+// Hide handshake form elements and display file upload form after connecting
 function onConnect() {
-  document.querySelector('#sendOffer').style.display = 'none';
-  document.querySelector('#sendAnswer').style.display = 'none';
-  document.querySelector('#sendFileForm').style.display = 'block';
-  document.querySelector('#downloadForm').style.display = 'block';
+  $('#sendOffer').css('display', 'none');
+  $('#sendAnswer').css('display', 'none');
+  $('#sendFileForm').css('display', 'block');
+  $('#downloadForm').css('display', 'block');
 
   toggleLoad(false);
 }
 
 
-// Hide file upload form and show handshake elements after disconnect
+// Hide file upload form and show handshake elements after disconnecting
 function onDisconnect() {
   reset();
   location.hash = '#fileMenu';
@@ -397,42 +420,42 @@ function onDisconnect() {
 
 // Update the file download percent user display
 function updateDownloadProgress(progress) {
-  document.querySelector('#downloadPercent').innerHTML = progress + '% complete';
+  $('#downloadPercent').html(progress + '% complete');
 }
 
 
 // Hide form elements and display an error message
 function displayError(message) {
-  document.querySelector('#shareFileForm').style.display = 'none';
-  document.querySelector('#shareFileError').style.display = 'block';
-  document.querySelector('#shareFileErrorMessage').innerHTML = '<h3>ERROR:</h3>' + message;
+  $('#shareFileForm').css('display', 'none');
+  $('#shareFileError').css('display', 'block');
+  $('#shareFileErrorMessage').html('<h3>ERROR:</h3>' + message);
 
-  document.querySelector('#receiveFileForm').style.display = 'none';
-  document.querySelector('#receiveFileError').style.display = 'block';
-  document.querySelector('#receiveFileErrorMessage').innerHTML = '<h3>ERROR:</h3>' + message;
+  $('#receiveFileForm').css('display', 'none');
+  $('#receiveFileError').css('display', 'block');
+  $('#receiveFileErrorMessage').html('<h3>ERROR:</h3>' + message);
 
   toggleLoad(false);
 }
 
 
-// Reset page elements and destroy peer if initialized
+// Reset page elements (and destroy peer if initialized)
 function reset() {
-  document.querySelector('#sendOffer').style.display = 'block';
-  document.querySelector('#getOffer').style.display = 'block';
-  document.querySelector('#shareFileForm').style.display = 'block';
-  document.querySelector('#receiveFileForm').style.display = 'block';
+  $('#sendOffer').css('display', 'block');
+  $('#getOffer').css('display', 'block');
+  $('#shareFileForm').css('display', 'block');
+  $('#receiveFileForm').css('display', 'block');
 
-  document.querySelector('#sendAnswer').style.display = 'none';
-  document.querySelector('#shareFileError').style.display = 'none';
-  document.querySelector('#receiveFileError').style.display = 'none';
+  $('#sendAnswer').css('display', 'none');
+  $('#shareFileError').css('display', 'none');
+  $('#receiveFileError').css('display', 'none');
 
-  document.querySelector('#shareHashOutput').value = '';
-  document.querySelector('#shareHashInput').value = '';
-  document.querySelector('#receiveHashInput').value = '';
-  document.querySelector('#receiveHashOutput').value = '';
+  $('#shareHashOutput').val('');
+  $('#shareHashInput').val('');
+  $('#receiveHashInput').val('');
+  $('#receiveHashOutput').val('');
 
-  document.querySelector('#sendFileForm').style.display = 'none';
-  document.querySelector('#downloadForm').style.display = 'none';
+  $('#sendFileForm').css('display', 'none');
+  $('#downloadForm').css('display', 'none');
 
   if (!!peer) {
     peer.destroy();

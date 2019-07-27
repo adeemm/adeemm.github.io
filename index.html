@@ -175,9 +175,9 @@
 												<input type="text" id="shareHashOutput" value="" placeholder="Generating.... Please wait a moment"/>
 												<br><br>
 												<label for="shareHashInput">Then enter the code they send back:</label>
-												<input type="text" id="shareHashInput" value="" placeholder="XXX"/>
+												<input type="text" id="shareHashInput" value="" placeholder="XXXX"/>
 												<br>
-												<button type="button" onclick="loadHash('#shareHashInput')">Submit Code</button>
+												<button type="button" onclick="loadHash($('#shareHashInput').val())">Submit Code</button>
 											</div>
 
 											<div id="sendFileForm" style="display:none;">
@@ -208,9 +208,9 @@
 										<center>
 											<div id="getOffer">
 												<label for="receiveHashInput">Enter your code here:</label>
-												<input type="text" id="receiveHashInput" value="" placeholder="XXX"/>
+												<input type="text" id="receiveHashInput" value="" placeholder="XXXX"/>
 												<br>
-												<button type="button" onclick="loadHash('#receiveHashInput')">Submit Code</button>
+												<button type="button" onclick="loadHash($('#receiveHashInput').val())">Submit Code</button>
 											</div>
 
 											<div id="sendAnswer" style="display:none;">
