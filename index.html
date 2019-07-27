@@ -105,7 +105,7 @@
 									<div class="field">
 										<input type="text" name="essaySubject" id="essaySubject" value="" placeholder="Subject" />
 										<br>
-										<center><button onclick="getWiki(document.getElementById('essaySubject').value)">Type Essay</button></center>
+										<center><button onclick="getWiki($('#essaySubject').val())">Type Essay</button></center>
 									</div>
 									<hr id="essayBar" style="display:none;" />
 									<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
