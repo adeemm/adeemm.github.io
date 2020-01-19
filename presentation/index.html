@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>CSOC Presentation</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>CVE-2019-17026</h1>
+					<h3>Firefox RCE</h3>
+					<p>
+						<small>Presentation by: Adeem Mawani</small>
+					</p>
+				</section>
+
+				<section>
+					<h2>Background Info</h2>
+					<ul>
+						<li>Mozilla released their advisory addressing this issue on January 8th</li>
+						<li>They reported known instances of targeted attacks in the wild</li>
+						<li>Targets most likely including large corporations and government entities (why else burn a 0-day)</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Implications</h2>
+					<ul>
+						<li>Bug can lead to RCE (Remote Code Execution)</li>
+						<li>Firefox <= 72 is vulnerable</li>
+						<li>No public PoC available… yet</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>The Bug</h2>
+					<ul>
+						<li>Occurs in Firefox's JIT (Just-In-Time) compiler IonMonkey</li>
+						<li>Exact details of the bug are still hidden from the public</li>
+						<li>Incorrect aliasing of array elements can lead to a Type Confusion bug</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>What is a JIT engine?</h2>
+					<ul>
+						<li>Turns managed code into native code as it runs</li>
+						<li>Analyzes code and performs optimizations</li>
+					</ul>
+					<img src="img/jit.png">
+				</section>
+
+				<section>
+					<h2>The Bug</h2>
+					<small>
+						<ul>
+							<li>Below is IonMonkey's pipeline architecture</li>
+							<li>Based on the limited patch notes, the bug most likely occurs during the "alias analysis" optimization step</li>
+						</ul>
+					</small>
+					<img src="img/ionmonkey.png" width="444">
+				</section>
+
+				<section>
+					<h2>Type Confusion Bugs</h2>
+					<ul>
+						<li>What is a type confusion bug?</li>
+						<li>They occur when an object of 1 type is backed in memory by an object of another type</li>
+						<li>How?</li>
+						<ul><li>Constructor overwritten</li></ul>
+					</ul>
+				</section>
+
+				<section>
+					<img src="img/typeconf.png">
+					<small>
+						Depending on the type of objects, r/w of pointers can occur
+					</small>
+				</section>
+
+				<section>
+					<section>
+						<h2>Exploitation</h2>
+						<ul>
+							<li>Could be used to bypass ASLR (Address Space Layout Randomization) by determing the address of the vtable (Virtual method table)</li>
+							<ul>
+								<li>ASLR randomizes the base address of an executable when it's loaded into memory</li>
+								<li>The vtable contains pointers to function definitions</li>
+							</ul>
+						</ul>
+					</section>
+
+					<section>
+						<img src="img/vtable.png">
+						<small>
+							Object's member overlaps the vtable for BitmapData
+						</small>
+					</section>
+
+					<section>
+						<h2>Code Execution</h2>
+						<ul>
+							<li>ASLR bypassed and arbitrary r/w primitive</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Profit?</h2>
+					</section>
+				</section>
+
+				<!-- <section id="themes">
+					<h2>Themes</h2>
+					<p>
+						reveal.js comes with a few themes built in: <br>
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/black.css'); return false;">Black (default)</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/white.css'); return false;">White</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/league.css'); return false;">League</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/sky.css'); return false;">Sky</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/beige.css'); return false;">Beige</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/simple.css'); return false;">Simple</a> <br>
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/serif.css'); return false;">Serif</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/blood.css'); return false;">Blood</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/night.css'); return false;">Night</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/moon.css'); return false;">Moon</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/solarized.css'); return false;">Solarized</a>
+					</p>
+				</section> -->
+
+				<!-- <section>
+					<h2>Pretty Code</h2>
+					<pre><code class="hljs" data-trim data-line-numbers="4,8-9">
+import React, { useState } from 'react';
+
+function Example() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;You clicked {count} times&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+        Click me
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+					</code></pre>
+					<p>Code syntax highlighting courtesy of <a href="http://softwaremaniacs.org/soft/highlight/en/description/">highlight.js</a>.</p>
+				</section> -->
+
+				<!-- <section>
+					<h2>Clever Quotes</h2>
+					<p>
+						These guys come in two forms, inline: <q cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">The nice thing about standards is that there are so many to choose from</q> and block:
+					</p>
+					<blockquote cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">
+						&ldquo;For years there has been a theory that millions of monkeys typing at random on millions of typewriters would
+						reproduce the entire works of Shakespeare. The Internet has proven this theory to be untrue.&rdquo;
+					</blockquote>
+				</section>
+
+				<section>
+					<h2>Intergalactic Interconnections</h2>
+					<p>
+						You can link between slides internally,
+						<a href="#/2/3">like this</a>.
+					</p>
+				</section> -->
+
+			</div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+				]
+			});
+		</script>
+
+	</body>
+</html>
