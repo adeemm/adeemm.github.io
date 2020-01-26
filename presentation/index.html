@@ -42,8 +42,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>CVE-2019-17026</h1>
-					<h3>Firefox RCE</h3>
+					<h1>Hijacked Botnet</h1>
+					<h3>Phorpiex</h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
 					</p>
@@ -52,96 +52,67 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>Mozilla released their advisory addressing this issue on January 8th</li>
-						<li>They reported known instances of targeted attacks in the wild</li>
-						<li>Targets most likely including large corporations and government entities (why else burn a 0-day)</li>
+						<li>Phorpiex (AKA Trik) malware family</li>
+						<li>Usually spread through exploit kits</li>
+						<li>Various spam campaigns generated over half a million US dollars</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Implications</h2>
-					<ul>
-						<li>Bug can lead to RCE (Remote Code Execution)</li>
-						<li>Firefox <= 72 is vulnerable</li>
-						<li>No public PoC available… yet</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>The Bug</h2>
-					<ul>
-						<li>Occurs in Firefox's JIT (Just-In-Time) compiler IonMonkey</li>
-						<li>Exact details of the bug are still hidden from the public</li>
-						<li>Incorrect aliasing of array elements can lead to a Type Confusion bug</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>What is a JIT engine?</h2>
-					<ul>
-						<li>Turns managed code into native code as it runs</li>
-						<li>Analyzes code and performs optimizations</li>
-					</ul>
-					<img src="img/jit.png">
-				</section>
-
-				<section>
-					<h2>The Bug</h2>
+					<img src="img/map.png">
 					<small>
-						<ul>
-							<li>Below is IonMonkey's pipeline architecture</li>
-							<li>Based on the limited patch notes, the bug most likely occurs during the "alias analysis" optimization step</li>
-						</ul>
-					</small>
-					<img src="img/ionmonkey.png" width="444">
-				</section>
-
-				<section>
-					<h2>Type Confusion Bugs</h2>
-					<ul>
-						<li>What is a type confusion bug?</li>
-						<li>They occur when an object of 1 type is backed in memory by an object of another type</li>
-						<li>How?</li>
-						<ul><li>Constructor overwritten</li></ul>
-					</ul>
-				</section>
-
-				<section>
-					<img src="img/typeconf.png">
-					<small>
-						Depending on the type of objects, r/w of pointers can occur
+						Infected host locations
 					</small>
 				</section>
 
 				<section>
-					<section>
-						<h2>Exploitation</h2>
-						<ul>
-							<li>Could be used to bypass ASLR (Address Space Layout Randomization) by determing the address of the vtable (Virtual method table)</li>
-							<ul>
-								<li>ASLR randomizes the base address of an executable when it's loaded into memory</li>
-								<li>The vtable contains pointers to function definitions</li>
-							</ul>
-						</ul>
-					</section>
+					<h2>Botnet Architecture</h2>
+					<ul>
+						<li>Infected over 1,000,000 Windows hosts</li>
+						<li>Used IRC for communication instead of single C2 server due to high traffic generated</li>
+					</ul>
+				</section>
 
-					<section>
-						<img src="img/vtable.png">
-						<small>
-							Object's member overlaps the vtable for BitmapData
-						</small>
-					</section>
+				<section>
+					<img src="img/irc.png">
+					<small>
+						Captured IRC commands (with decrypted URL)
+					</small>
+				</section>
 
-					<section>
-						<h2>Code Execution</h2>
-						<ul>
-							<li>ASLR bypassed and arbitrary r/w primitive</li>
-						</ul>
-					</section>
+				<section>
+					<h2>Infrastructure Hijacking</h2>
+					<ul>
+						<li>Early January 23, this message was observed on infected hosts</li>
+					</ul>
+					<img src="img/message.jpg">
+				</section>
 
-					<section>
-						<h2>Profit?</h2>
-					</section>
+				<section>
+					<h2>Infrastructure Hijacking</h2>
+					<ul>
+						<li>Originally believed to be a red herring for security researchers</li>
+						<li>However, further observation showed that this appeared on real-world systems as well</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Possible Theories</h2>
+					<ul>
+						<li>Malware operators decided to quit and shut down the botnet on their own terms</li>
+						<li>Law enforcement action</li>
+						<li>Vigilante security researcher taking matters into their own hands</li>
+						<li>Rival malware gang sabotaging the Phorpiex backend</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Past Security Breaches</h2>
+					<ul>
+						<li>In 2018, the malware developer left one of the botnet's command and control servers exposed</li>
+						<li>Security researchers were able to retrieve a list of 43.5 million email addresses that were targeted with spam campaigns</li>
+						<li>So, hijacking is a likely explanation</li>
+					</ul>
 				</section>
 
 				<!-- <section id="themes">
