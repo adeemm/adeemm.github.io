@@ -42,8 +42,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Hijacked Botnet</h1>
-					<h3>Phorpiex</h3>
+					<h2>United Nations Breach</h2>
+					<h3>&amp; Cover-Up</h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
 					</p>
@@ -52,66 +52,67 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>Phorpiex (AKA Trik) malware family</li>
-						<li>Usually spread through exploit kits</li>
-						<li>Various spam campaigns generated over half a million US dollars</li>
+						<li>Occured in mid-July of 2019</li>
+						<li>Unauthorized access to over 400GB of data</li>
+						<li>At least 42 different compromised servers</li>
 					</ul>
 				</section>
 
 				<section>
-					<img src="img/map.png">
-					<small>
-						Infected host locations
-					</small>
-				</section>
-
-				<section>
-					<h2>Botnet Architecture</h2>
+					<h2>The Breach</h2>
 					<ul>
-						<li>Infected over 1,000,000 Windows hosts</li>
-						<li>Used IRC for communication instead of single C2 server due to high traffic generated</li>
+						<li>Previously unknown until recently, when a leaked confidential IT report surfaced</li>
+						<li>Not announced to the public</li>
+						<li>Even staff were not made aware, just asked to change passwords</li>
 					</ul>
 				</section>
 
 				<section>
-					<img src="img/irc.png">
-					<small>
-						Captured IRC commands (with decrypted URL)
-					</small>
-				</section>
-
-				<section>
-					<h2>Infrastructure Hijacking</h2>
+					<h2>The Breach Cont.</h2>
 					<ul>
-						<li>Early January 23, this message was observed on infected hosts</li>
-					</ul>
-					<img src="img/message.jpg">
-				</section>
-
-				<section>
-					<h2>Infrastructure Hijacking</h2>
-					<ul>
-						<li>Originally believed to be a red herring for security researchers</li>
-						<li>However, further observation showed that this appeared on real-world systems as well</li>
+						<li>The breach affected dozens of servers in three separate locations:</li>
+						<ul>
+							<li>UN Office at Vienna</li>
+							<li>UN Office at Geneva</li>
+							<li>UN Office of the High Commissioner for Human Rights (OHCHR) headquarters in Geneva</li>
+						</ul>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Possible Theories</h2>
+					<h2>Leaked Report</h2>
 					<ul>
-						<li>Malware operators decided to quit and shut down the botnet on their own terms</li>
-						<li>Law enforcement action</li>
-						<li>Vigilante security researcher taking matters into their own hands</li>
-						<li>Rival malware gang sabotaging the Phorpiex backend</li>
+						<li>Only internal IT teams and the chiefs of the UN Office at Geneva and the UN Office at Vienna were informed</li>
+						<li>Lateral movement across multiple AD domains</li>
+						<blockquote>
+							&ldquo; We are working under the assumption that the entire domain is compromised... &rdquo;
+						</blockquote>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Past Security Breaches</h2>
+					<h2>The Breach Cont.</h2>
 					<ul>
-						<li>In 2018, the malware developer left one of the botnet's command and control servers exposed</li>
-						<li>Security researchers were able to retrieve a list of 43.5 million email addresses that were targeted with spam campaigns</li>
-						<li>So, hijacking is a likely explanation</li>
+						<li>Possible breach of GDPR? (EU General Data Protection Regulation)</li>
+						<li>Nope, UN has diplomatic status, so it has immunity from the legal process</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Who's behind the breach?</h2>
+					<ul>
+						<li>Not yet attributed</li>
+						<li>Most likely nation-state actors</li>
+						<li>Some APT (Advanced Persistent Threat) group</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>How did they do it?</h2>
+					<ul>
+						<li>Used CVE-2019-0604</li>
+						<li>Microsoft SharePoint RCE Vulnerability</li>
+						<li>Patch was released in February, and the attack occured in July</li>
 					</ul>
 				</section>
 
