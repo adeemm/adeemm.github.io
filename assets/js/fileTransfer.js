@@ -12,7 +12,6 @@ var peer;
 function initPeer() {
   peer = new SimplePeer({ initiator: location.hash === '#sendFiles', trickle: false });
 
-
   peer.on('signal', async function (data) {
     toggleLoad(true);
 
@@ -40,9 +39,7 @@ function initPeer() {
   });
 
 
-  peer.on('connect', function () {
-    onConnect();
-  })
+  peer.on('connect', onConnect)
 
 
   peer.on('data', function (data) {
@@ -55,9 +52,7 @@ function initPeer() {
   });
 
 
-  peer.on('close', function () {
-    onDisconnect();
-  });
+  peer.on('close', onDisconnect);
 
 
   peer.on('error', function (err) {
@@ -87,7 +82,7 @@ function checkWebRTCSupport() {
   else {
     // Safari doesn't disclose host ice canidates until you trust the site with media permissions
     if (Safari) {
-      displayError('Due to technological limitations by Apple, this may only work in Safari after granting permission to your webcam & microphone. If you don&#39;t trust this site, try using Firefox or Chrome instead.');
+      displayError('Safari requires granting permission to your webcam & microphone. <br>If you don&#39;t trust this, try using Firefox or Chrome instead.');
       navigator.mediaDevices.getUserMedia({audio: true, video: true})
       .then(function(stream) {
         reset();
@@ -192,8 +187,8 @@ function generateHash(signal) {
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        reject('Failed to generate share code! Try again later');
         console.log(jqXHR);
+        reject('Failed to generate share code! Try again later');
       }
     });
   });
@@ -224,8 +219,8 @@ function convertHash(hash) {
         }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        reject('Failed to decode share code! Try again later');
         console.log(jqXHR);
+        reject('Failed to decode share code! Try again later');
       }
     });
   });
@@ -237,7 +232,12 @@ async function loadHash(condensed) {
   toggleLoad(true);
 
   // Get delimited data (other hashes) from the condensed hash
-  var delimited = await convertHash(condensed);
+  var delimited = await convertHash(condensed)
+    .catch(function(err) {
+      alert(err);
+      toggleLoad(false);
+      return;
+    });
 
   // Split delimited data into an array
   var hashes = delimited.split('-');
@@ -415,6 +415,7 @@ function onConnect() {
 function onDisconnect() {
   reset();
   location.hash = '#fileMenu';
+  alert('Peer disconnected')
 }
 
 

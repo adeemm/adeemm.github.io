@@ -139,7 +139,7 @@
 									This is a way to transfer your files directly from one device to another. To establish a connection to
 									each other, you and the recipient exchange a set of generated "codes". After that, you can send the recipient
 									as many files as you want (until you close your browser). Also note that there's a 15 second timeout while
-									connecting, so type fast! (This limit wasn't set by me, it's a feature/limitation of Google Chrome)
+									connecting, so type fast!
 								</p>
 								<h2 class="major">Why?</h2>
 								<p>
@@ -153,13 +153,13 @@
 									server finds a network path between the two peers by implementing the ICE (Interactive Connectivity Establishment)
 									protocol. After finding a path, the peer initiating the connection generates an SDP (Session Description Protocol)
 									offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they generate a
-									SDP answer, which must be sent back to the first peer. After both peers receive each other's handshake, the connection
+									SDP answer, which must be sent back to the first peer. After both peers complete the handshake, the connection
 									can be established and data can start passing directly between them. Normally, a signaling server is used to send the
 									initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
-									server instance of course), so I decided to let the users send this data directly to each other. To make this feasible,
+									server instance), so I decided to let the users send this data directly to each other. To make this feasible,
 									the handshake had to be heavily compressed. First, the data was first split into smaller chunks, and each chunk was assigned a key.
 									Finally, the combination of shorter keys are assigned to a single key. Each "code" generated is actually a key linked to a
-									chunk of encoded JSON handshake data. If the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
+									chunk of encoded JSON handshake data. Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
 									so sending data directly between the two peers isn't possible.
 								</p>
 							</article>
