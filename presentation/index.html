@@ -42,8 +42,12 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h2>United Nations Breach</h2>
-					<h3>&amp; Cover-Up</h3>
+					<img src="img/title.jpg">
+				</section>
+
+				<section>
+					<h1>Sudo Vulnerability</h2>
+					<h3>Another one...</h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
 					</p>
@@ -52,68 +56,57 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>Occured in mid-July of 2019</li>
-						<li>Unauthorized access to over 400GB of data</li>
-						<li>At least 42 different compromised servers</li>
+						<li>Found by Apple security researcher Joe Vennix</li>
+						<li>Tracked as CVE-2019-18634</li>
+						<li>Allows for priviledge escalation</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>The Breach</h2>
+					<h2>Previous Vulnerability</h2>
 					<ul>
-						<li>Previously unknown until recently, when a leaked confidential IT report surfaced</li>
-						<li>Not announced to the public</li>
-						<li>Even staff were not made aware, just asked to change passwords</li>
+						<li>CVE-2019-14287 discovered back in October 2019</li>
+						<li>Also found by Vennix</li>
+						<li>Allowed arbitrary command execution as root, even in cases where root access is disallowed</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>The Breach Cont.</h2>
+					<h2>This Vulnerability</h2>
 					<ul>
-						<li>The breach affected dozens of servers in three separate locations:</li>
+						<li>Affects Sudo versions prior too 1.8.26</li>
+						<li>Can only be exploited when the "pwfeedback" option is enabled</li>
 						<ul>
-							<li>UN Office at Vienna</li>
-							<li>UN Office at Geneva</li>
-							<li>UN Office of the High Commissioner for Human Rights (OHCHR) headquarters in Geneva</li>
+							<li>This option gives visual feedback (*) when typing your password</li>
 						</ul>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Leaked Report</h2>
+					<h2>How It Works</h2>
 					<ul>
-						<li>Only internal IT teams and the chiefs of the UN Office at Geneva and the UN Office at Vienna were informed</li>
-						<li>Lateral movement across multiple AD domains</li>
-						<blockquote>
-							&ldquo; We are working under the assumption that the entire domain is compromised... &rdquo;
-						</blockquote>
+						<li>Stack-based buffer overflow</li>
+						<li>During a write error, the function erasing the asterisks (pwfeedback) doesn't properly reset the buffer position, but it does reset the remaining buffer length</li>
+						<li>Allows for writing past end of the buffer</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>The Breach Cont.</h2>
+					<h2>PoC</h2>
+					<pre><code class="bash" language="bash" data-trim data-line-numbers="4,8-9">
+						$ perl -e 'print(("A" x 100 . "\x{00}") x 50)' | sudo -S id
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>The Good News</h2>
 					<ul>
-						<li>Possible breach of GDPR? (EU General Data Protection Regulation)</li>
-						<li>Nope, UN has diplomatic status, so it has immunity from the legal process</li>
+						<li>This option is disabled by default in most distros (except Linux Mint &amp; Elementary OS)</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Who's behind the breach?</h2>
-					<ul>
-						<li>Not yet attributed</li>
-						<li>Most likely nation-state actors</li>
-						<li>Some APT (Advanced Persistent Threat) group</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>How did they do it?</h2>
-					<ul>
-						<li>Used CVE-2019-0604</li>
-						<li>Microsoft SharePoint RCE Vulnerability</li>
-						<li>Patch was released in February, and the attack occured in July</li>
-					</ul>
+					<h1>Questions?</h2>
 				</section>
 
 				<!-- <section id="themes">
