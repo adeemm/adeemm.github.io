@@ -42,12 +42,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<img src="img/title.jpg">
-				</section>
-
-				<section>
-					<h1>Sudo Vulnerability</h2>
-					<h3>Another one...</h3>
+					<h1>Corp.com For Sale</h2>
+					<h3>One of the most dangerous domains</h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
 					</p>
@@ -56,52 +52,80 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>Found by Apple security researcher Joe Vennix</li>
-						<li>Tracked as CVE-2019-18634</li>
-						<li>Allows for priviledge escalation</li>
+						<li>Early investor Mike O'Connor bought several short domain names back in 1994</li>
+						<li>These included bar.com, grill.com, and corp.com among others</li>
+						<li>Until now, he has refused to auction off corp.com because of how sensitive it is</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Previous Vulnerability</h2>
+					<h2>Why Auction?</h2>
 					<ul>
-						<li>CVE-2019-14287 discovered back in October 2019</li>
-						<li>Also found by Vennix</li>
-						<li>Allowed arbitrary command execution as root, even in cases where root access is disallowed</li>
+						<li>After purchasing these domains early on, they soon increased in value as the internet grew</li>
+						<li>He held on to corp.com until now</li>
+						<li>The asking price is 1.7 million</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>This Vulnerability</h2>
+					<h2>The Dangerous Domain</h2>
 					<ul>
-						<li>Affects Sudo versions prior too 1.8.26</li>
-						<li>Can only be exploited when the "pwfeedback" option is enabled</li>
-						<ul>
-							<li>This option gives visual feedback (*) when typing your password</li>
-						</ul>
+						<li>So why is corp.com so dangerous?</li>
+						<li>The root of the problem lies with early Windows versions and namespace collisions</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>How It Works</h2>
+					<h2>Namespace Collision?</h2>
 					<ul>
-						<li>Stack-based buffer overflow</li>
-						<li>During a write error, the function erasing the asterisks (pwfeedback) doesn't properly reset the buffer position, but it does reset the remaining buffer length</li>
-						<li>Allows for writing past end of the buffer</li>
+						<li>A "namespace collision" is when a domain name intended to be used only on an internal company network ends up overlapping with domains that resolve normally on the open Internet</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>PoC</h2>
-					<pre><code class="bash" language="bash" data-trim data-line-numbers="4,8-9">
-						$ perl -e 'print(("A" x 100 . "\x{00}") x 50)' | sudo -S id
-					</code></pre>
+					<h2>Misconfigurations</h2>
+					<ul>
+						<li>Early Windows AD setup a default domain of corp.com</li>
+						<li>Unless otherwise configured with a proper company controlled domain</li>
+					</ul>
 				</section>
 
 				<section>
-					<h2>The Good News</h2>
+					<h2>DNS Devolution</h2>
 					<ul>
-						<li>This option is disabled by default in most distros (except Linux Mint &amp; Elementary OS)</li>
+						<li>Allows for shorthand acess of shared drives</li>
+						<li>"\\drive1\" instead of "drive1.internalnetwork.example.com"</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>DNS Devolution Cont.</h2>
+					<ul>
+						<li>This causes trouble whenever a company asset leaves the internal network</li>
+						<li>For example, at Starbucks, the computer will try to login to the internal drive, but since corp.com also resovles on the open internet, whoever owns the domain can easily harvest credentials</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Traffic Analysis</h2>
+					<ul>
+						<li>Security researcher Jeff Schmidt aquired funding from the Department of Homeland Security to study DNS devolution</li>
+						<li>During an 8 month analysis in 2019, Schmidt found more than 375,000 Windows PCs sending the site credentials</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Traffic Analysis Cont.</h2>
+					<ul>
+						<li>When corp.com was setup to accept incoming SMTP traffic, they received 12 million emails</li>
+						<li>They included pre-releases of corporate financial filings with The U.S. Securities and Exchange Commission, human resources reports, and other scary things</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Mitigations</h2>
+					<ul>
+						<li>Many companies have neglected patching because it would require taking down the entire Active Directory network for a while</li>
 					</ul>
 				</section>
 
