@@ -42,8 +42,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Corp.com For Sale</h2>
-					<h3>One of the most dangerous domains</h3>
+					<h1>Perilous Peripherals</h2>
+					<h3>New Firmware Research</h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
 					</p>
@@ -52,80 +52,62 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>Early investor Mike O'Connor bought several short domain names back in 1994</li>
-						<li>These included bar.com, grill.com, and corp.com among others</li>
-						<li>Until now, he has refused to auction off corp.com because of how sensitive it is</li>
+						<li>New resarch by Jesse Michael and Rick Altherr of Eclypsium</li>
+						<li>Analyzes the prevalance of unsigned firmware updates on peripheral devices</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Why Auction?</h2>
+					<h2>What is firmware signing?</h2>
 					<ul>
-						<li>After purchasing these domains early on, they soon increased in value as the internet grew</li>
-						<li>He held on to corp.com until now</li>
-						<li>The asking price is 1.7 million</li>
+						<li>Firmware governs the low-level behavior of a component</li>
+						<li>It may be burned into the integrated circuit of the device, or stored in flash memory</li>
+						<li>Signing allows for verification via cryptographic keys before running the code. This validates that the firmware is authentic and can be trusted</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>The Dangerous Domain</h2>
+					<h2>The Research</h2>
 					<ul>
-						<li>So why is corp.com so dangerous?</li>
-						<li>The root of the problem lies with early Windows versions and namespace collisions</li>
+						<li>Found many devices accept unsigned firmware updates</li>
+						<li>These devices include: WiFi Adapters, USB Hubs, Trackpads, Laptop Cameras And Network Interface Cards</li>
+						<li>From Lenovo, Dell, HP and other major manufacturers</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Namespace Collision?</h2>
+					<h2>Compromise</h2>
+					<ol>
+						<li>An attacker gains access to a device via any method, such as malware delivered via email</li>
+						<li>With basic user privileges, the attacker writes malicious firmware to a vulnerable component</li>
+						<li>If the component doesn’t require the firmware to be properly signed, the attacker’s code is loaded and run by the component</li>
+						<li>The attacker can then use the unique functionality and privileges of that component to further an attack</li>
+					</ol>
+				</section>
+
+				<section>
+					<h2>Special Privileges</h2>
 					<ul>
-						<li>A "namespace collision" is when a domain name intended to be used only on an internal company network ends up overlapping with domains that resolve normally on the open Internet</li>
+						<li>Firmware on a network adapter could allow an attacker to sniff, copy, redirect, block, or alter traffic (eg. block logging or alerts)</li>
+						<li>A compromised hard drive could allow the attacker to hide code and tools without being seen by the OS</li>
+						<li>PCI-based devices could enable Direct Memory Access attacks (direct R/W of memory, bypassing the OS and CPU)</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Misconfigurations</h2>
+					<h2>Implications</h2>
 					<ul>
-						<li>Early Windows AD setup a default domain of corp.com</li>
-						<li>Unless otherwise configured with a proper company controlled domain</li>
+						<li>Malware stays undetected by any software security controls</li>
+						<li>In many cases, doesn't even require priviledge escalation to a root user</li>
+						<li>(some firmware updates can be installed with average user permissions)</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>DNS Devolution</h2>
+					<h2>Fixes?</h2>
 					<ul>
-						<li>Allows for shorthand acess of shared drives</li>
-						<li>"\\drive1\" instead of "drive1.internalnetwork.example.com"</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>DNS Devolution Cont.</h2>
-					<ul>
-						<li>This causes trouble whenever a company asset leaves the internal network</li>
-						<li>For example, at Starbucks, the computer will try to login to the internal drive, but since corp.com also resovles on the open internet, whoever owns the domain can easily harvest credentials</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>Traffic Analysis</h2>
-					<ul>
-						<li>Security researcher Jeff Schmidt aquired funding from the Department of Homeland Security to study DNS devolution</li>
-						<li>During an 8 month analysis in 2019, Schmidt found more than 375,000 Windows PCs sending the site credentials</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>Traffic Analysis Cont.</h2>
-					<ul>
-						<li>When corp.com was setup to accept incoming SMTP traffic, they received 12 million emails</li>
-						<li>They included pre-releases of corporate financial filings with The U.S. Securities and Exchange Commission, human resources reports, and other scary things</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>Mitigations</h2>
-					<ul>
-						<li>Many companies have neglected patching because it would require taking down the entire Active Directory network for a while</li>
+						<li>Despite previous in-the-wild attacks, peripheral manufacturers have been slow to adopt the practice of signing firmware</li>
+						<li>Even from some PoC's demonstrated, these vendors still have no plans to implement firmware signing</li>
 					</ul>
 				</section>
 
