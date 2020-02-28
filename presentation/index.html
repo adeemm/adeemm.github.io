@@ -42,8 +42,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Perilous Peripherals</h2>
-					<h3>New Firmware Research</h3>
+					<h1>OpenSMTPD Vulnerabilities</h2>
+					<h3></h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
 					</p>
@@ -52,62 +52,45 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>New resarch by Jesse Michael and Rick Altherr of Eclypsium</li>
-						<li>Analyzes the prevalance of unsigned firmware updates on peripheral devices</li>
+						<li>New resarch by Qualys researchers</li>
+						<li>Found 2 vulnerabilities in OpenSMTPD</li>
+						<li>Fix released on Feb 24th</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>What is firmware signing?</h2>
+					<h2>First Vulnerability</h2>
 					<ul>
-						<li>Firmware governs the low-level behavior of a component</li>
-						<li>It may be burned into the integrated circuit of the device, or stored in flash memory</li>
-						<li>Signing allows for verification via cryptographic keys before running the code. This validates that the firmware is authentic and can be trusted</li>
+						<li>Lower impact</li>
+						<li>Allows local users to read the contents of arbitrary files</li>
+						<li>Read the first line of an arbitrary file or entire contents of another user's file</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>The Research</h2>
+					<h2>First Vulnerability Cont.</h2>
 					<ul>
-						<li>Found many devices accept unsigned firmware updates</li>
-						<li>These devices include: WiFi Adapters, USB Hubs, Trackpads, Laptop Cameras And Network Interface Cards</li>
-						<li>From Lenovo, Dell, HP and other major manufacturers</li>
+						<li>Generally not exploitable on most Linux distributions</li>
+						<li>Due to <code style="background-color: black;">/proc/sys/fs/protected_hardlinks</code> being set to "1" by default</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Compromise</h2>
-					<ol>
-						<li>An attacker gains access to a device via any method, such as malware delivered via email</li>
-						<li>With basic user privileges, the attacker writes malicious firmware to a vulnerable component</li>
-						<li>If the component doesn’t require the firmware to be properly signed, the attacker’s code is loaded and run by the component</li>
-						<li>The attacker can then use the unique functionality and privileges of that component to further an attack</li>
-					</ol>
-				</section>
-
-				<section>
-					<h2>Special Privileges</h2>
+					<h2>Second Vulnerability</h2>
 					<ul>
-						<li>Firmware on a network adapter could allow an attacker to sniff, copy, redirect, block, or alter traffic (eg. block logging or alerts)</li>
-						<li>A compromised hard drive could allow the attacker to hide code and tools without being seen by the OS</li>
-						<li>PCI-based devices could enable Direct Memory Access attacks (direct R/W of memory, bypassing the OS and CPU)</li>
+						<li>Out-of-bounds read flaw</li>
+						<li>Allows execution of arbitrary shell commands as root</li>
+						<li>Resides in client-side code flow</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Implications</h2>
+					<h2>Exploitation Steps</h2>
 					<ul>
-						<li>Malware stays undetected by any software security controls</li>
-						<li>In many cases, doesn't even require priviledge escalation to a root user</li>
-						<li>(some firmware updates can be installed with average user permissions)</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>Fixes?</h2>
-					<ul>
-						<li>Despite previous in-the-wild attacks, peripheral manufacturers have been slow to adopt the practice of signing firmware</li>
-						<li>Even from some PoC's demonstrated, these vendors still have no plans to implement firmware signing</li>
+						<li>For remote exploitation, send mail that creates a bounce</li>
+						<li>Next, OpenSMTPD connects back to their mail server to deliver the bounce</li>
+						<li>This allows for remote exploitation of OpenSMTPD’s client-side vulnerability</li>
+						<li>However, for shell commands to be executed, the attacker must crash OpenSMTPD and wait until it's restarted</li>
 					</ul>
 				</section>
 
