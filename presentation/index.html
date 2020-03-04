@@ -42,7 +42,7 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>OpenSMTPD Vulnerabilities</h2>
+					<h1>Transatlantic Wiretaps</h2>
 					<h3></h3>
 					<p>
 						<small>Presentation by: Adeem Mawani</small>
@@ -52,45 +52,64 @@
 				<section>
 					<h2>Background Info</h2>
 					<ul>
-						<li>New resarch by Qualys researchers</li>
-						<li>Found 2 vulnerabilities in OpenSMTPD</li>
-						<li>Fix released on Feb 24th</li>
+						<li>Russian Intelligence agents have been sent to Ireland to gather information about the undersea cables that connect Europe to North America</li>
+						<li>They are members of the military intelligence branch of the Russian armed forces, the GRU</li>
+						<li>This is creating fears regarding wiretapping or sabotage</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>First Vulnerability</h2>
+					<h2>The Cables</h2>
 					<ul>
-						<li>Lower impact</li>
-						<li>Allows local users to read the contents of arbitrary files</li>
-						<li>Read the first line of an arbitrary file or entire contents of another user's file</li>
+						<img src="img/cablemap.png"></img>
 					</ul>
 				</section>
 
 				<section>
-					<h2>First Vulnerability Cont.</h2>
+					<h2>Wiretapping Concerns</h2>
 					<ul>
-						<li>Generally not exploitable on most Linux distributions</li>
-						<li>Due to <code style="background-color: black;">/proc/sys/fs/protected_hardlinks</code> being set to "1" by default</li>
+						<li>Ireland is a strategic point where internet traffic from North America reaches Europe</li>
+						<li>They also lack sufficient counter-intelligence capability</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Second Vulnerability</h2>
+					<h2>Previous Taps</h2>
 					<ul>
-						<li>Out-of-bounds read flaw</li>
-						<li>Allows execution of arbitrary shell commands as root</li>
-						<li>Resides in client-side code flow</li>
+						<li>Carried out by several different countries in the past</li>
+						<li>Leaked documents reveal this has happened repeatedly</li>
 					</ul>
 				</section>
 
 				<section>
-					<h2>Exploitation Steps</h2>
+					<h2>Previous Taps - GB</h2>
 					<ul>
-						<li>For remote exploitation, send mail that creates a bounce</li>
-						<li>Next, OpenSMTPD connects back to their mail server to deliver the bounce</li>
-						<li>This allows for remote exploitation of OpenSMTPD’s client-side vulnerability</li>
-						<li>However, for shell commands to be executed, the attacker must crash OpenSMTPD and wait until it's restarted</li>
+						<li>British spy base located on the northern coast of Oman</li>
+						<li>This allows the British Government to tap to various undersea cables passing into the Persian/Arabian Gulf</li>
+						<li>Included other locations with codenames: TIMPANI”, “GUITAR” and “CLARINET”</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Previous Taps - US</h2>
+					<ul>
+						<li>Snowden's leak revealed the US also took part</li>
+						<li>US made top-secret deals with more than 30 countries to tap into fiber optic cables all over the world</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Previous Taps - US</h2>
+					<ul>
+						<img src="img/ts.jpg"></img>
+					</ul>
+				</section>
+
+				<section>
+					<h2>GCHQ Taps</h2>
+					<ul>
+						<li>Monitor nearly 46 billion private communications “events” per day</li>
+						<li>Includes content from online messages, browsing sessions, VOIP calls, and emails</li>
 					</ul>
 				</section>
 
