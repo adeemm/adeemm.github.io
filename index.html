@@ -157,9 +157,8 @@
 									can be established and data can start passing directly between them. Normally, a signaling server is used to send the
 									initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
 									server instance), so I decided to let the users send this data directly to each other. To make this feasible,
-									the handshake had to be heavily compressed. First, the data was first split into smaller chunks, and each chunk was assigned a key.
-									Finally, the combination of shorter keys are assigned to a single key. Each "code" generated is actually a key linked to a
-									chunk of encoded JSON handshake data. Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
+									the handshake had to be heavily compressed. The "code" generated is actually a key linked to encoded JSON handshake data.
+									Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
 									so sending data directly between the two peers isn't possible.
 								</p>
 							</article>
@@ -182,7 +181,7 @@
 
 											<div id="sendFileForm" style="display:none;">
 												<br>
-												<label for="selectedFile"  class="button icon fa-download"><strong>Select File</strong></label>
+												<label for="selectedFile" class="button icon fa-download"><strong>Select File</strong></label>
 												<input type="file" id="selectedFile" style="display:none;"/>
 												&nbsp;&nbsp;&nbsp;
 									      <button type="button" onclick="sendFile()">Send File</button>

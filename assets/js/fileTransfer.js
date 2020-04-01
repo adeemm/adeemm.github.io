@@ -15,31 +15,13 @@ function initPeer() {
   peer.on('signal', async function (data) {
     toggleLoad(true);
 
-    // Get the handshake data, split it into chunks, and generate each chunk's hash
+    // Get the handshake data and generate the chunk's hash
     var handshake = JSON.stringify(data);
-    var chunks = chunkString(handshake, 200);
-    var hashes = chunks.map(generateHash);
+    var hash = await generateHash(handshake).catch(err => alert(err));
 
-    // Asynchronously generate each chunk's hash,
-    // Then replace the promise array with each promise's value
-    await Promise.all(hashes)
-      .then(values => hashes = values)
-      .catch(function(err) {
-        alert(err);
-        toggleLoad(false);
-        return;
-    });
-
-    // Join each hash together and generate one final condensed hash
-    var generatedHashes = hashes.join('-');
-    var condensed = await generateHash(generatedHashes).catch(err => alert(err));
-
-    updateHashDisplay(peer.initiator, condensed);
+    updateHashDisplay(peer.initiator, hash);
     toggleLoad(false);
   });
-
-
-  peer.on('connect', onConnect)
 
 
   peer.on('data', function (data) {
@@ -50,6 +32,9 @@ function initPeer() {
       receiveFile(data);
     }
   });
+
+
+  peer.on('connect', onConnect)
 
 
   peer.on('close', onDisconnect);
@@ -118,34 +103,6 @@ function decodeBase64(str) {
 }
 
 
-// Split a long string into smaller chunks
-function chunkString(input, size) {
-  var numChunks = Math.ceil(input.length / size);
-  var chunks = new Array(numChunks);
-
-  for (let i = 0, j = 0; i < numChunks; ++i, j += size) {
-    chunks[i] = input.substr(j, size);
-  }
-
-  return chunks;
-}
-
-
-// Returns the hostname (excluding the TLD) of a specified URL
-function getURLHostname(url) {
-  var hostname;
-
-  if (url.indexOf('//') > -1) {
-    hostname = url.split('/')[2];
-  }
-  else {
-    hostname = url.split('/')[0];
-  }
-
-  return hostname.substr(0, hostname.indexOf('.'));
-}
-
-
 // Convert bytes into larger units
 function formatBytes(bytes, decimals) {
   if(bytes == 0) return '0 Bytes';
@@ -161,13 +118,10 @@ function formatBytes(bytes, decimals) {
 
 // Return a short, user-friendly hash from long SDP handshake data
 function generateHash(signal) {
-  var shorteningAPI = 'http://ulvis.net/API/write/get?url=';
+  var apiURL = 'https://api.teknik.io/v1/Paste';
 
   // Get a URL safe base64 encoding of the signal data
   var encoded = encodeBase64(signal);
-
-  // Generate URL to pass to URL shortening service
-  var fakeURL = 'http://' + encoded + '.com';
 
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
@@ -175,11 +129,12 @@ function generateHash(signal) {
   // Resolve or reject the returned promise based on the ajax response
   return new Promise(function(resolve, reject) {
     $.ajax({
-      url: corsProxy + shorteningAPI + fakeURL + '&private=1',
-      type: 'GET',
+      url: corsProxy + apiURL,
+      type: 'POST',
+      data: { code: encoded, expireUnit: 'view', expireLength: 1, password: 'insecurePSKbutThisDataIsntReallySensitive' },
       success: function(res) {
         try {
-          var hash = res.data.id;
+          var hash = res.result.id;
           resolve(hash);
         }
         catch (err) {
@@ -197,7 +152,7 @@ function generateHash(signal) {
 
 // Convert short hash back into JSON SDP handshake form
 function convertHash(hash) {
-  var shorteningAPI = 'http://ulvis.net/API/read/get?id=';
+  var pasteURL = 'https://p.teknik.io/Raw/';
 
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
@@ -205,13 +160,11 @@ function convertHash(hash) {
   // Resolve or reject the returned promise based on the ajax response
   return new Promise(function(resolve, reject) {
     $.ajax({
-      url: corsProxy + shorteningAPI + hash + '&private=1',
+      url: corsProxy + pasteURL + hash + '/insecurePSKbutThisDataIsntReallySensitive',
       type: 'GET',
       success: function(res) {
         try {
-          var redirect = res.data.full;
-          var hostname = getURLHostname(redirect);
-          var decoded = decodeBase64(hostname);
+          var decoded = decodeBase64(res);
           resolve(decoded);
         }
         catch (err) {
@@ -228,35 +181,16 @@ function convertHash(hash) {
 
 
 // Load hash from the specified text input element
-async function loadHash(condensed) {
+async function loadHash(hash) {
   toggleLoad(true);
 
-  // Get delimited data (other hashes) from the condensed hash
-  var delimited = await convertHash(condensed)
+  // Get handshake data from the condensed hash
+  var handshake = await convertHash(hash)
     .catch(function(err) {
       alert(err);
       toggleLoad(false);
       return;
     });
-
-  // Split delimited data into an array
-  var hashes = delimited.split('-');
-
-  // Remove any empty elements
-  var filteredHashes = hashes.filter(Boolean);
-
-  // Convert each element back into a JSON chunk
-  var converts = filteredHashes.map(convertHash);
-  await Promise.all(converts)
-    .then(values => converts = values)
-    .catch(function(err) {
-      alert(err);
-      toggleLoad(false);
-      return;
-  });
-
-  // Join each chunk back together
-  var handshake = converts.join('');
 
   // Handle the handshake data
   peer.signal(JSON.parse(handshake));
@@ -458,6 +392,8 @@ function reset() {
   $('#sendFileForm').css('display', 'none');
   $('#downloadForm').css('display', 'none');
 
+  $("#selectedFile").text('Select File');
+
   if (!!peer) {
     peer.destroy();
   }
@@ -468,3 +404,12 @@ function reset() {
 function toggleLoad(shouldShow) {
   $('#loading').toggle(shouldShow);
 }
+
+
+// Event handler for file selection label feedback
+$("#selectedFile").change(function() {
+  var fileName = $(this).val().split('\\').pop();
+  var fileExt = fileName.slice(fileName.lastIndexOf('.') + 1);
+  var label = $(this).prop("labels");
+  $(label).text('Selected .' + fileExt);
+});
