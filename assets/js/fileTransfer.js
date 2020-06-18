@@ -42,7 +42,7 @@ function initPeer() {
 
   peer.on('error', function (err) {
     console.log('Error:', err);
-    displayError(err.message);
+    displayError('Error', err.message);
   });
 }
 
@@ -59,25 +59,17 @@ function isWebRTCSupported() {
 
 // Check browser WebRTC support and throw error if unsupported
 function checkWebRTCSupport() {
-  var Safari = navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && navigator.userAgent.indexOf('CriOS') == -1 && navigator.userAgent.indexOf('FxiOS') == -1;
-
   if (!isWebRTCSupported()) {
-    displayError('WebRTC is not supported in your browser! Try using Firefox or Chrome');
+    displayError('Error', 'WebRTC is not supported in your browser! Try using Firefox or Chrome');
   }
   else {
-    // Safari doesn't disclose host ice canidates until you trust the site with media permissions
-    if (Safari) {
-      displayError('Safari requires granting permission to your webcam & microphone. <br>If you don&#39;t trust this, try using Firefox or Chrome instead.');
-      navigator.mediaDevices.getUserMedia({audio: true, video: true})
-      .then(function(stream) {
-        reset();
-        initPeer();
-      });
-    }
-    else {
+    // Ask for media permissions to disclose local IPs instead of just mDNS
+    displayError('If you are on the same network', 'Permission must be granted to your webcam & microphone. <br>This is just a workaround, &nbsp;<strong>NO</strong>&nbsp; audio or video is actually used!');
+    navigator.mediaDevices.getUserMedia({audio: true, video: true})
+    .finally(function(stream) {
       reset();
       initPeer();
-    }
+    });
   }
 }
 
@@ -360,14 +352,14 @@ function updateDownloadProgress(progress) {
 
 
 // Hide form elements and display an error message
-function displayError(message) {
+function displayError(title, message) {
   $('#shareFileForm').css('display', 'none');
   $('#shareFileError').css('display', 'block');
-  $('#shareFileErrorMessage').html('<h3>ERROR:</h3>' + message);
+  $('#shareFileErrorMessage').html('<h3>' + title + ':</h3>' + message);
 
   $('#receiveFileForm').css('display', 'none');
   $('#receiveFileError').css('display', 'block');
-  $('#receiveFileErrorMessage').html('<h3>ERROR:</h3>' + message);
+  $('#receiveFileErrorMessage').html('<h3>' + title + ':</h3>' + message);
 
   toggleLoad(false);
 }
@@ -392,7 +384,7 @@ function reset() {
   $('#sendFileForm').css('display', 'none');
   $('#downloadForm').css('display', 'none');
 
-  $("#selectedFile").text('Select File');
+  $('#selectedFile').text('Select File');
 
   if (!!peer) {
     peer.destroy();
@@ -407,9 +399,9 @@ function toggleLoad(shouldShow) {
 
 
 // Event handler for file selection label feedback
-$("#selectedFile").change(function() {
+$('#selectedFile').change(function() {
   var fileName = $(this).val().split('\\').pop();
   var fileExt = fileName.slice(fileName.lastIndexOf('.') + 1);
-  var label = $(this).prop("labels");
+  var label = $(this).prop('labels');
   $(label).text('Selected .' + fileExt);
 });
