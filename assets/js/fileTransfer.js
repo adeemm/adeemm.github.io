@@ -63,13 +63,15 @@ function checkWebRTCSupport() {
     displayError('Error', 'WebRTC is not supported in your browser! Try using Firefox or Chrome');
   }
   else {
+	displayError('Enable CORS Proxy Server', '<iframe style="width: 100%" src="https://cors-anywhere.herokuapp.com/corsdemo"></iframe> <br><br> <button onclick="reset();initPeer()">Next</button>');
+	
     // Ask for media permissions to disclose local IPs instead of just mDNS
-    displayError('If you are on the same network', 'Permission must be granted to your webcam & microphone. <br>This is just a workaround, &nbsp;<strong>NO</strong>&nbsp; audio or video is actually used!');
-    navigator.mediaDevices.getUserMedia({audio: true, video: true})
-    .finally(function(stream) {
-      reset();
-      initPeer();
-    });
+    //displayError('If you are on the same network', 'Permission must be granted to your webcam & microphone. <br>This is just a workaround, &nbsp;<strong>NO</strong>&nbsp; audio or video is actually used!');
+    //navigator.mediaDevices.getUserMedia({audio: true, video: true})
+    //.finally(function() {
+    //  reset();
+    //  initPeer();
+    //});
   }
 }
 
@@ -110,7 +112,8 @@ function formatBytes(bytes, decimals) {
 
 // Return a short, user-friendly hash from long SDP handshake data
 function generateHash(signal) {
-  var apiURL = 'https://api.teknik.io/v1/Paste';
+  var xhr = new XMLHttpRequest();
+  var apiURL = 'https://upaste.de/';
 
   // Get a URL safe base64 encoding of the signal data
   var encoded = encodeBase64(signal);
@@ -123,10 +126,11 @@ function generateHash(signal) {
     $.ajax({
       url: corsProxy + apiURL,
       type: 'POST',
-      data: { code: encoded, expireUnit: 'view', expireLength: 1, password: 'insecurePSKbutThisDataIsntReallySensitive' },
+	  xhr: function() { return xhr; },
+      data: { text: encoded },
       success: function(res) {
         try {
-          var hash = res.result.id;
+		  var hash = xhr.getResponseHeader("X-final-url").split("/").pop();
           resolve(hash);
         }
         catch (err) {
@@ -144,7 +148,7 @@ function generateHash(signal) {
 
 // Convert short hash back into JSON SDP handshake form
 function convertHash(hash) {
-  var pasteURL = 'https://p.teknik.io/Raw/';
+  var pasteURL = 'https://upaste.de/raw/';
 
   // Bypass CORS restrictions for cross-domain API requests
   var corsProxy = 'https://cors-anywhere.herokuapp.com/';
@@ -152,7 +156,7 @@ function convertHash(hash) {
   // Resolve or reject the returned promise based on the ajax response
   return new Promise(function(resolve, reject) {
     $.ajax({
-      url: corsProxy + pasteURL + hash + '/insecurePSKbutThisDataIsntReallySensitive',
+      url: corsProxy + pasteURL + hash,
       type: 'GET',
       success: function(res) {
         try {

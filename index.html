@@ -30,7 +30,7 @@
 						<div class="content">
 							<div class="inner">
 								<h1>Adeem Mawani</h1>
-								<p>Developer & Student at Clemson University</p>
+								<p>Security Researcher</p>
 							</div>
 						</div>
 						<nav>
@@ -52,44 +52,27 @@
 
 								<ul class="accordion" data-accordion="open">
 									<li class="accord">
+										<div class="accordion-header">Detecting LDAP Reconnaissance</div>
+										<div class="accordion-body">
+											Developed detections for Windows Active Directory enumeration
+											<br><br><a href="https://www.blacklanternsecurity.com/2021-06-28-Detecting-LDAP-Reconnaissance/" target="_blank">[Article]</a>
+											&nbsp; <a href="https://github.com/SigmaHQ/sigma/blob/master/rules/windows/other/win_ldap_recon.yml" target="_blank">[Sigma Rule]</a>
+										</div>
+									</li>
+									
+									<li class="accord">
+										<div class="accordion-header">School of Phish</div>
+										<div class="accordion-body">
+											Web dashboard for analyzing potential phishing links
+											<br><br><a href="https://github.com/adeemm/School-of-Phish" target="_blank">[CODE]</a>
+										</div>
+									</li>
+									
+									<li class="accord">
 										<div class="accordion-header">Ex-509</div>
 										<div class="accordion-body">
 											Data exfiltration abusing x509 certificates and TLS handshakes
 											<br><br><a href="https://github.com/adeemm/ex-509" target="_blank">[CODE]</a>
-										</div>
-									</li>
-								  
-									<li class="accord">
-										<div class="accordion-header">Apples2Oranges</div>
-										<div class="accordion-body">
-											Artificial Intelligence that can distinguish between pictures of apples and oranges
-											<br><br><a href="https://github.com/adeemm/Apples2Oranges" target="_blank">[CODE]</a>
-										</div>
-									</li>
-								  
-									<li class="accord">
-										<div class="accordion-header">TV-Tracker</div>
-										<div class="accordion-body">
-											An iOS app to easily keep track of your favorite TV Shows
-											<br><br><a href="https://github.com/adeemm/TV-Tracker" target="_blank">[CODE]</a>
-											&nbsp; <a href="https://itunes.apple.com/us/app/tv-tracker/id1450124008" target="_blank">[DOWNLOAD]</a>
-										</div>
-									</li>
-									
-									<li class="accord">
-										<div class="accordion-header">JeffersonClub-Client</div>
-										<div class="accordion-body">
-											A cross-platform mobile app to manage community service hours and volunteering
-											<br><br><a href="https://github.com/adeemm/JeffersonClub-Client" target="_blank">[CODE]</a>
-										</div>
-									</li>
-									
-									<li class="accord">
-										<div class="accordion-header">APUSH-Companion</div>
-										<div class="accordion-body">
-											An iOS app to help students prepare for the AP US History Exam
-											<br><br><a href="https://github.com/adeemm/APUSH-Companion" target="_blank">[CODE]</a>
-											&nbsp; <a href="https://appsto.re/us/V23Tfb.i" target="_blank">[DOWNLOAD]</a>
 										</div>
 									</li>
 								</ul>
@@ -142,25 +125,25 @@
 								<p>
 									This is a way to transfer your files directly from one device to another. To establish a connection to
 									each other, you and the recipient exchange a set of generated "codes". After that, you can send the recipient
-									as many files as you want (until you close your browser). Also note that there's a 15 second timeout while
+									as many files as you want (until you close the connection). Also note that there's a timeout while
 									connecting, so type fast!
 								</p>
 								<h2 class="major">Why?</h2>
 								<p>
-									In peer-to-peer file transfer, your data never gets sent to another server, so it's faster and more secure.
+									In peer-to-peer file transfer, your data gets sent directly to the recipient and doesn't have to travel through an intermediary server, so it's faster and more private.
 									You also don't have to worry about the file size limits that exist in emails or texts.
 								</p>
 								<h2 class="major">How?</h2>
 								<p>
 									This implementation uses WebRTC to establish a connection between browsers and is (almost) completely serverless.
 									In order for peers to discover each other, a STUN (Session Traversal Utilities for NAT) server must be used. This
-									server finds a network path between the two peers by implementing the ICE (Interactive Connectivity Establishment)
-									protocol. After finding a path, the peer initiating the connection generates an SDP (Session Description Protocol)
+									server helps to find a network path between the two peers as a part of the ICE (Interactive Connectivity Establishment)
+									protocol. The peer initiating the connection generates an SDP (Session Description Protocol)
 									offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they generate a
 									SDP answer, which must be sent back to the first peer. After both peers complete the handshake, the connection
 									can be established and data can start passing directly between them. Normally, a signaling server is used to send the
 									initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
-									server instance), so I decided to let the users send this data directly to each other. To make this feasible,
+									instance), so I decided to let the users send this data directly to each other. To make this feasible,
 									the handshake had to be heavily compressed. The "code" generated is actually a key linked to encoded JSON handshake data.
 									Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
 									so sending data directly between the two peers isn't possible.
@@ -238,33 +221,6 @@
 								</p>
 							</article>
 
-						<!-- Privacy -->
-							<article id="privacy">
-								<h2 class="major">Privacy Policy</h2>
-								<p>
-									This purpose of this policy is to inform visitors regarding the collection, use, and disclosure of personally identifiable information (PII).
-									If you do not agree to the following policy you may wish to cease use of this service.
-									This service is provided at no cost and is intended for use as is.
-									<br>
-									<h3>Information Collection &amp; Use</h3>
-									This app uses a third party service that may collect certain personally identifiable information for advertisement attiribution / identification (Google AdMob).
-									I do not control the actual advertisements seen / displayed by advertising partners.
-									Advertising partners partners may collect data and use cookies for ad personalization and measurement.
-									Clicking on any advertisements may track your actions by using a cookie saved to your device.
-									Where ad preferences are requested as 'non-personalised', cookies may still be used for frequency capping, aggregated ad reporting and to combat fraud and abuse.
-									<br><br>
-									<h3>Cookies</h3>
-									Cookies are files with a small amount of data that are commonly used as unique identifiers. These are stored on your device's internal memory.
-									This service does not use “cookies” explicitly, however, it may contain third party libraries that use such “cookies” to collect information and improve their services.
-									<br><br>
-									<h3>Security</h3>
-									No method of transmission over the internet, or method of electronic storage is 100% secure and reliable. Therefore, I cannot guarantee its absolute security.
-									<br><br>
-									<h3>Changes to this Policy</h3>
-									I may modify this policy at any time. Thus, you are advised to review this page periodically for any changes. These changes are effective immediately after they are posted.
-								</p>
-							</article>
-
 					</div>
 
 				<!-- Footer -->
@@ -284,8 +240,7 @@
 			<script src="assets/js/main.js"></script>
 			<script src="assets/js/essayTyper.js"></script>
 			<script src="assets/js/simplepeer.min.js"></script>
-	    <script src="assets/js/fileTransfer.js"></script>
+			<script src="assets/js/fileTransfer.js"></script>
 			<script src="assets/js/accordion.js"></script>
-
 	</body>
 </html>
