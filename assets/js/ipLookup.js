@@ -9,6 +9,8 @@ function lookupIP(ip) {
 
   else {
     toggleLoad(true);
+      
+    $('#ipOutput').html("");
 
     var serviceList = [
       {
@@ -68,7 +70,6 @@ function lookupIP(ip) {
         "url": "https://www.virustotal.com/gui/ip-address/"
       }
     ]
-
 
     $('#ipBar').css("display", "block");
 
