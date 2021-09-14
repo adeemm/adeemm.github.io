@@ -36,8 +36,9 @@
 						<nav>
 							<ul>
 								<li><a href="#projects">My Projects</a></li>
-								<li><a href="#essays">Essay Typer</a></li>
+								<!-- <li><a href="#essays">Essay Typer</a></li> -->
 								<li><a href="#fileMenu">P2P File Sharing</a></li>
+								<li><a href="#IPLookup">IP Enrichment</a></li>
 								<!-- <li><a href="#elements">Elements</a></li> -->
 							</ul>
 						</nav>
@@ -59,7 +60,7 @@
 											&nbsp; <a href="https://github.com/SigmaHQ/sigma/blob/master/rules/windows/other/win_ldap_recon.yml" target="_blank">[Sigma Rule]</a>
 										</div>
 									</li>
-									
+
 									<li class="accord">
 										<div class="accordion-header">School of Phish</div>
 										<div class="accordion-body">
@@ -67,7 +68,7 @@
 											<br><br><a href="https://github.com/adeemm/School-of-Phish" target="_blank">[CODE]</a>
 										</div>
 									</li>
-									
+
 									<li class="accord">
 										<div class="accordion-header">Ex-509</div>
 										<div class="accordion-body">
@@ -221,6 +222,20 @@
 								</p>
 							</article>
 
+							<!-- IP Enrichment -->
+								<article id="IPLookup">
+									<h2 class="major">IP Lookup</h2>
+									<p>
+										<div class="field">
+											<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X" />
+											<br>
+											<center><button onclick="lookupIP($('#ipText').val())">Submit</button></center>
+										</div>
+										<hr id="ipBar" style="display:none;" />
+										<div id="ipOutput"></div>
+									</p>
+								</article>
+
 					</div>
 
 				<!-- Footer -->
@@ -241,6 +256,7 @@
 			<script src="assets/js/essayTyper.js"></script>
 			<script src="assets/js/simplepeer.min.js"></script>
 			<script src="assets/js/fileTransfer.js"></script>
+			<script src="assets/js/ipLookup.js"></script>
 			<script src="assets/js/accordion.js"></script>
 	</body>
 </html>
