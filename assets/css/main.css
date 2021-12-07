@@ -1021,6 +1021,17 @@
 			font-weight: 600;
 		}
 
+		input[type="submit"].small,
+		input[type="reset"].small,
+		input[type="button"].small,
+		button.small,
+		.button.small {
+			font-size: 0.819em;
+	    height: 2.0625rem;
+	    line-height: 2.0625rem;
+			letter-spacing: normal;
+		}
+
 		input[type="submit"].disabled, input[type="submit"]:disabled,
 		input[type="reset"].disabled,
 		input[type="reset"]:disabled,
