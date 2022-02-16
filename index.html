@@ -14,258 +14,261 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
+	
 	<body>
 
 		<!-- File Share loader -->
 		<div class="loading" id="loading" style="display:none;">loading</div>
 
 		<!-- Wrapper -->
-			<div id="wrapper">
+		<div id="wrapper">
 
-				<!-- Header -->
-					<header id="header">
-						<ul class="icons" style="margin-bottom: 0;">
-							<li><a href="https://www.linkedin.com/in/adeemm" target="_blank" class="icon brands fa-linkedin"></a></li>
-							<li><a href="mailto:adeemmawani@gmail.com" target="_blank" class="icon brands fa-envelope"></a></li>
-							<li><a href="https://github.com/adeemm" target="_blank" class="icon brands fa-github"></a></li>
-						</ul>
-						<div class="content">
-							<div class="inner">
-								<h1>Adeem Mawani</h1>
-								<p>Security Researcher</p>
+			<!-- Header -->
+			<header id="header">
+				<ul class="icons" style="margin-bottom: 0;">
+					<li><a href="https://www.linkedin.com/in/adeemm" target="_blank" class="icon brands fa-linkedin"></a></li>
+					<li><a href="mailto:adeemmawani@gmail.com" target="_blank" class="icon brands fa-envelope"></a></li>
+					<li><a href="https://github.com/adeemm" target="_blank" class="icon brands fa-github"></a></li>
+				</ul>
+				<div class="content">
+					<div class="inner">
+						<h1>Adeem Mawani</h1>
+						<p>Security Researcher</p>
+					</div>
+				</div>
+				<nav>
+					<ul>
+						<li><a href="#projects">My Projects</a></li>
+						<!-- <li><a href="#essays">Essay Typer</a></li> -->
+						<li><a href="#fileMenu">P2P File Sharing</a></li>
+						<li><a href="#IPLookup">IP Enrichment</a></li>
+						<!-- <li><a href="#elements">Elements</a></li> -->
+					</ul>
+				</nav>
+			</header>
+
+			<!-- Main -->
+			<div id="main">
+
+				<!-- Projects -->
+				<article id="projects">
+					<h2 class="major">My Projects</h2>
+
+					<ul class="accordion" data-accordion="open">
+						<li class="accord">
+							<div class="accordion-header">Detecting LDAP Reconnaissance</div>
+							<div class="accordion-body">
+								Detections for Windows Active Directory enumeration
+								<br><br>
+								<a href="https://blog.blacklanternsecurity.com/p/detecting-ldap-recoannaissance" class="button small special icon fa-file" target="_blank"> Article</a>
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								<a href="https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/ldap/win_ldap_recon.yml" class="button small special icon fa-shield" target="_blank"> Sigma Rule</a>
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								<a href="research/ldap-recon/queries.html" class="button small special icon fa-search" target="_blank"> LDAP Query Reference</a>
 							</div>
+						</li>
+
+						<li class="accord">
+							<div class="accordion-header">Ex-509</div>
+							<div class="accordion-body">
+								Data exfiltration abusing X.509 certificates and TLS handshakes
+								<br><br>
+								<a href="https://github.com/adeemm/ex-509" class="button small special icon fa-github" target="_blank"> Code</a>
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								<a href="https://humoud.github.io/dfir/2021/12/03/tls-cipher-suite-exfil.html" class="button small special icon fa-info-circle" target="_blank"> Analysis</a>
+							</div>
+						</li>
+
+						<li class="accord">
+							<div class="accordion-header">School of Phish</div>
+							<div class="accordion-body">
+								Web dashboard for analyzing potential phishing links
+								<br><br>
+								<a href="https://github.com/adeemm/School-of-Phish" class="button small special icon fa-github" target="_blank"> Code</a>
+							</div>
+						</li>
+					</ul>
+
+					<br>
+
+					<h3>
+						<a href="https://github.com/adeemm" class="button icon fa-github" target="_blank"> More Projects</a>
+					</h3>
+
+				</article>
+
+				<!-- Essay -->
+				<article id="essays">
+					<h2 class="major">Essay Typer</h2>
+					<p>
+						<div class="field">
+							<input type="text" name="essaySubject" id="essaySubject" value="" placeholder="Subject" />
+							<br>
+							<center><button onclick="getWiki($('#essaySubject').val())">Type Essay</button></center>
 						</div>
-						<nav>
-							<ul>
-								<li><a href="#projects">My Projects</a></li>
-								<!-- <li><a href="#essays">Essay Typer</a></li> -->
-								<li><a href="#fileMenu">P2P File Sharing</a></li>
-								<li><a href="#IPLookup">IP Enrichment</a></li>
-								<!-- <li><a href="#elements">Elements</a></li> -->
-							</ul>
-						</nav>
-					</header>
+						<hr id="essayBar" style="display:none;" />
+						<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
+						<p id="essayError" style="display:none;"></p>
+						<div id="output"></div>
+					</p>
+				</article>
 
-				<!-- Main -->
-					<div id="main">
+				<!-- FileMenu -->
+				<article id="fileMenu">
+					<h2 class="major">File Sharing</h2>
+					<p>
+						<div class="field">
+							<center>
+								<br>
+								<a href="#sendFiles" id="uploadFileLink" class="button icon fa-upload">Share Files</a>
+								<br class="responsive-break">
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<br class="responsive-break">
+								<a href="#downloadFiles" id="downloadFileLink" class="button icon fa-download">Receive Files</a>
+							</center>
+						</div>
+					</p>
+					<a href="#fileInfo" class="icon fa-info-circle" style="float:right;"></a>
+				</article>
 
-						<!-- Projects -->
-							<article id="projects">
-								<h2 class="major">My Projects</h2>
+				<!-- FileInfo -->
+				<article id="fileInfo">
+					<h2 class="major">What is it?</h2>
+					<p>
+						This is a way to transfer your files directly from one device to another. To establish a connection to
+						each other, you and the recipient exchange a set of generated "codes." After that, you can send the recipient
+						as many files as you want (until you close the connection). Also note that there's a timeout while
+						connecting, so type fast!
+					</p>
+					<p><a href="https://xkcd.com/949/" target="_blank">Relevant XKCD</a></p>
+					<h2 class="major">Why?</h2>
+					<p>
+						In peer-to-peer file transfer, your data gets sent directly to the recipient and doesn't have to travel through an intermediary server, so it's faster and more private.
+						You also don't have to worry about the file size limits that exist in emails or texts.
+					</p>
+					<h2 class="major">How?</h2>
+					<p>
+						This implementation uses WebRTC to establish a connection between browsers and is (almost) completely serverless.
+						In order for peers to discover each other, a STUN (Session Traversal Utilities for NAT) server must be used. This
+						server helps to find a network path between the two peers as a part of the ICE (Interactive Connectivity Establishment)
+						protocol. The peer initiating the connection generates an SDP (Session Description Protocol)
+						offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they generate a
+						SDP answer, which must be sent back to the first peer. After both peers complete the handshake, the connection
+						can be established and data can start passing directly between them. Normally, a signaling server is used to send the
+						initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
+						instance), so I decided to let the users send this data directly to each other. To make this feasible,
+						the handshake had to be heavily compressed. The "code" generated is actually a key linked to encoded JSON handshake data.
+						Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
+						so sending data directly between the two peers isn't possible.
+					</p>
+				</article>
 
-								<ul class="accordion" data-accordion="open">
-									<li class="accord">
-										<div class="accordion-header">Detecting LDAP Reconnaissance</div>
-										<div class="accordion-body">
-											Detections for Windows Active Directory enumeration
-											<br><br>
-											<a href="https://blog.blacklanternsecurity.com/p/detecting-ldap-recoannaissance" class="button small special icon fa-file" target="_blank"> Article</a>
-											&nbsp;&nbsp;&nbsp;&nbsp;
-											<a href="https://github.com/SigmaHQ/sigma/blob/master/rules/windows/other/ldap/win_ldap_recon.yml" class="button small special icon fa-shield" target="_blank"> Sigma Rule</a>
-										</div>
-									</li>
+				<!-- sendFiles -->
+				<article id="sendFiles">
+					<h2 class="major">Share Files</h2>
+					<p>
+						<div class="field" id="shareFileForm">
+							<center>
+								<div id="sendOffer">
+									<label for="shareHashOutput">Send this code to the recipient:</label>
+									<input type="text" id="shareHashOutput" value="" placeholder="Generating.... Please wait a moment"/>
+									<br><br>
+									<label for="shareHashInput">Then enter the code they send back:</label>
+									<input type="text" id="shareHashInput" value="" placeholder="XXXX"/>
+									<br>
+									<button type="button" onclick="loadHash($('#shareHashInput').val())">Submit Code</button>
+								</div>
 
-									<li class="accord">
-										<div class="accordion-header">Ex-509</div>
-										<div class="accordion-body">
-											Data exfiltration abusing X.509 certificates and TLS handshakes
-											<br><br>
-											<a href="https://github.com/adeemm/ex-509" class="button small special icon fa-github" target="_blank"> Code</a>
-											&nbsp;&nbsp;&nbsp;&nbsp;
-											<a href="https://humoud.github.io/dfir/2021/12/03/tls-cipher-suite-exfil.html" class="button small special icon fa-info-circle" target="_blank"> Analysis</a>
-										</div>
-									</li>
+								<div id="sendFileForm" style="display:none;">
+									<br>
+									<label for="selectedFile" class="button icon fa-download"><strong>Select File</strong></label>
+									<input type="file" id="selectedFile" style="display:none;"/>
+									&nbsp;&nbsp;&nbsp;
+								<button type="button" onclick="sendFile()">Send File</button>
+								</div>
 
-									<li class="accord">
-										<div class="accordion-header">School of Phish</div>
-										<div class="accordion-body">
-											Web dashboard for analyzing potential phishing links
-											<br><br>
-											<a href="https://github.com/adeemm/School-of-Phish" class="button small special icon fa-github" target="_blank"> Code</a>
-										</div>
-									</li>
-								</ul>
+								<br>
+							</center>
+						</div>
+
+						<div class="field" id="shareFileError" style="display:none;">
+							<center>
+								<p id="shareFileErrorMessage">Error:  </p>
+							</center>
+						</div>
+					</p>
+				</article>
+
+				<!-- downloadFiles -->
+				<article id="downloadFiles">
+					<h2 class="major">Receive Files</h2>
+					<p>
+						<div class="field" id="receiveFileForm">
+							<center>
+								<div id="getOffer">
+									<label for="receiveHashInput">Enter your code here:</label>
+									<input type="text" id="receiveHashInput" value="" placeholder="XXXX"/>
+									<br>
+									<button type="button" onclick="loadHash($('#receiveHashInput').val())">Submit Code</button>
+								</div>
+
+								<div id="sendAnswer" style="display:none;">
+									<label for="receiveHashOutput">Now send this code back to the sender:</label>
+									<input type="text" id="receiveHashOutput" value=""/>
+								</div>
 
 								<br>
 
-								<h3>
-									<a href="https://github.com/adeemm" class="button icon fa-github" target="_blank"> More Projects</a>
-								</h3>
+								<div id="downloadForm" style="display:none;">
+									<p id="downloadInfo">Waiting for a file to download...</p>
+									<p id="downloadPercent"></p>
+								</div>
+							</center>
+						</div>
 
-							</article>
+						<div class="field" id="receiveFileError" style="display:none;">
+							<center>
+								<p id="receiveFileErrorMessage">Error:  </p>
+							</center>
+						</div>
+					</p>
+				</article>
 
-						<!-- Essay -->
-							<article id="essays">
-								<h2 class="major">Essay Typer</h2>
-								<p>
-									<div class="field">
-										<input type="text" name="essaySubject" id="essaySubject" value="" placeholder="Subject" />
-										<br>
-										<center><button onclick="getWiki($('#essaySubject').val())">Type Essay</button></center>
-									</div>
-									<hr id="essayBar" style="display:none;" />
-									<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
-									<p id="essayError" style="display:none;"></p>
-									<div id="output"></div>
-								</p>
-							</article>
-
-						<!-- FileMenu -->
-							<article id="fileMenu">
-								<h2 class="major">File Sharing</h2>
-								<p>
-									<div class="field">
-										<center>
-											<br>
-											<a href="#sendFiles" id="uploadFileLink" class="button icon fa-upload">Share Files</a>
-											<br class="responsive-break">
-											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-											<br class="responsive-break">
-											<a href="#downloadFiles" id="downloadFileLink" class="button icon fa-download">Receive Files</a>
-										</center>
-									</div>
-								</p>
-								<a href="#fileInfo" class="icon fa-info-circle" style="float:right;"></a>
-							</article>
-
-						<!-- FileInfo -->
-							<article id="fileInfo">
-								<h2 class="major">What is it?</h2>
-								<p>
-									This is a way to transfer your files directly from one device to another. To establish a connection to
-									each other, you and the recipient exchange a set of generated "codes." After that, you can send the recipient
-									as many files as you want (until you close the connection). Also note that there's a timeout while
-									connecting, so type fast!
-								</p>
-								<p><a href="https://xkcd.com/949/" target="_blank">Relevant XKCD</a></p>
-								<h2 class="major">Why?</h2>
-								<p>
-									In peer-to-peer file transfer, your data gets sent directly to the recipient and doesn't have to travel through an intermediary server, so it's faster and more private.
-									You also don't have to worry about the file size limits that exist in emails or texts.
-								</p>
-								<h2 class="major">How?</h2>
-								<p>
-									This implementation uses WebRTC to establish a connection between browsers and is (almost) completely serverless.
-									In order for peers to discover each other, a STUN (Session Traversal Utilities for NAT) server must be used. This
-									server helps to find a network path between the two peers as a part of the ICE (Interactive Connectivity Establishment)
-									protocol. The peer initiating the connection generates an SDP (Session Description Protocol)
-									offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they generate a
-									SDP answer, which must be sent back to the first peer. After both peers complete the handshake, the connection
-									can be established and data can start passing directly between them. Normally, a signaling server is used to send the
-									initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
-									instance), so I decided to let the users send this data directly to each other. To make this feasible,
-									the handshake had to be heavily compressed. The "code" generated is actually a key linked to encoded JSON handshake data.
-									Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
-									so sending data directly between the two peers isn't possible.
-								</p>
-							</article>
-
-						<!-- sendFiles -->
-							<article id="sendFiles">
-								<h2 class="major">Share Files</h2>
-								<p>
-									<div class="field" id="shareFileForm">
-										<center>
-											<div id="sendOffer">
-												<label for="shareHashOutput">Send this code to the recipient:</label>
-												<input type="text" id="shareHashOutput" value="" placeholder="Generating.... Please wait a moment"/>
-												<br><br>
-												<label for="shareHashInput">Then enter the code they send back:</label>
-												<input type="text" id="shareHashInput" value="" placeholder="XXXX"/>
-												<br>
-												<button type="button" onclick="loadHash($('#shareHashInput').val())">Submit Code</button>
-											</div>
-
-											<div id="sendFileForm" style="display:none;">
-												<br>
-												<label for="selectedFile" class="button icon fa-download"><strong>Select File</strong></label>
-												<input type="file" id="selectedFile" style="display:none;"/>
-												&nbsp;&nbsp;&nbsp;
-									      <button type="button" onclick="sendFile()">Send File</button>
-											</div>
-
-											<br>
-										</center>
-									</div>
-
-									<div class="field" id="shareFileError" style="display:none;">
-										<center>
-											<p id="shareFileErrorMessage">Error:  </p>
-										</center>
-									</div>
-								</p>
-							</article>
-
-						<!-- downloadFiles -->
-							<article id="downloadFiles">
-								<h2 class="major">Receive Files</h2>
-								<p>
-									<div class="field" id="receiveFileForm">
-										<center>
-											<div id="getOffer">
-												<label for="receiveHashInput">Enter your code here:</label>
-												<input type="text" id="receiveHashInput" value="" placeholder="XXXX"/>
-												<br>
-												<button type="button" onclick="loadHash($('#receiveHashInput').val())">Submit Code</button>
-											</div>
-
-											<div id="sendAnswer" style="display:none;">
-												<label for="receiveHashOutput">Now send this code back to the sender:</label>
-												<input type="text" id="receiveHashOutput" value=""/>
-											</div>
-
-											<br>
-
-											<div id="downloadForm" style="display:none;">
-												<p id="downloadInfo">Waiting for a file to download...</p>
-												<p id="downloadPercent"></p>
-											</div>
-										</center>
-									</div>
-
-									<div class="field" id="receiveFileError" style="display:none;">
-										<center>
-											<p id="receiveFileErrorMessage">Error:  </p>
-										</center>
-									</div>
-								</p>
-							</article>
-
-							<!-- IP Enrichment -->
-								<article id="IPLookup">
-									<h2 class="major">IP Lookup</h2>
-									<p>
-										<div class="field">
-											<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X" />
-											<br>
-											<center><button onclick="lookupIP($('#ipText').val())">Submit</button></center>
-										</div>
-										<hr id="ipBar" style="display:none;" />
-										<div id="ipOutput"></div>
-									</p>
-								</article>
-
-					</div>
-
-				<!-- Footer -->
-					<footer id="footer">
-						<p class="copyright"></p>
-					</footer>
+				<!-- IP Enrichment -->
+				<article id="IPLookup">
+					<h2 class="major">IP Lookup</h2>
+					<p>
+						<div class="field">
+							<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X" />
+							<br>
+							<center><button onclick="lookupIP($('#ipText').val())">Submit</button></center>
+						</div>
+						<hr id="ipBar" style="display:none;" />
+						<div id="ipOutput"></div>
+					</p>
+				</article>
 
 			</div>
 
+			<!-- Footer -->
+			<footer id="footer">
+				<p class="copyright"></p>
+			</footer>
+
+		</div>
+
 		<!-- BG -->
-			<div id="bg"></div>
+		<div id="bg"></div>
 
 		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="assets/js/essayTyper.js"></script>
-			<script src="assets/js/simplepeer.min.js"></script>
-			<script src="assets/js/fileTransfer.js"></script>
-			<script src="assets/js/ipLookup.js"></script>
-			<script src="assets/js/accordion.js"></script>
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/skel.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+		<script src="assets/js/essayTyper.js"></script>
+		<script src="assets/js/simplepeer.min.js"></script>
+		<script src="assets/js/fileTransfer.js"></script>
+		<script src="assets/js/ipLookup.js"></script>
+		<script src="assets/js/accordion.js"></script>
 	</body>
 </html>
