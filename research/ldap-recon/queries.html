@@ -74,7 +74,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <code>(|(description= <em>pass</em>)(comment= <em>pass</em>)) </code>
+                                <code>(|(description="pass")(comment="pass")) </code>
                             </td>
                             <td>Objects with a password in the description or comment</td>
                         </tr>
@@ -134,13 +134,13 @@
                         </tr>
                         <tr>
                             <td>
-                                <code>(samAccountName= <em>) </code>
+                                <code>(samAccountName=*) </code>
                             </td>
                             <td>Objects with a login account name</td>
                         </tr>
                         <tr>
                             <td>
-                                <code>(|(homedirectory= </em>)(scriptpath= <em>)(profilepath=</em>)) </code>
+                                <code>(|(homedirectory=*)(scriptpath=*)(profilepath=*)) </code>
                             </td>
                             <td>Objects with a home directory, logon script, or profile path</td>
                         </tr>
@@ -314,7 +314,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <code>(servicePrincipalName= <em>) </code>
+                                <code>(servicePrincipalName=*) </code>
                             </td>
                             <td>All objects with a SPN</td>
                         </tr>
@@ -344,7 +344,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <code>(msDS-AllowedToDelegateTo= </em>) </code>
+                                <code>(msDS-AllowedToDelegateTo=*) </code>
                             </td>
                             <td>Objects with constrained delegation</td>
                         </tr>
