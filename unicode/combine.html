@@ -1,0 +1,189 @@
+<html>
+
+<head>
+    <title>Unicode Combine</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+	<link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <!--[if lte IE 9]><link rel="stylesheet" href="../assets/css/ie9.css" /><![endif]-->
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+
+    <script src="../assets/js/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <div id="main" style="width: 100%;">
+
+            <article id="combining" style="opacity: 1; width: 100%;">
+                <h1>Unicode Combining</h1>
+
+                <br>
+
+				<div class="loading" id="loading">loading</div>
+
+				<label for="combText">Combined Output:</label>
+				<input type="text" id="combText" value="">
+
+				<br><br>
+
+				<label for="insertText">Insert character by codepoint:</label>
+				<input type="text" id="insertText" value="" placeholder="U+00000">
+
+				<br>
+
+				<a href="#" class="button small special icon fa-step-forward" onclick="onPrependClick();" style="margin-right: 2em;"> Prepend</a>
+				<a href="#" class="button small special icon fa-step-backward" onclick="onAppendClick();"> Append</a>
+				
+				<br><br><br>
+	
+				<label for="combCatSelect">Select from combining category:</label>
+				<select id="combCatSelect">
+					<option value="1">Overlay</option>
+					<option value="6">Han Reading</option>
+					<option value="7">Nukta</option>
+					<option value="8">Kana Voicing</option>
+					<option value="9">Virama</option>
+					<option value="10">CCC10</option>
+					<option value="11">CCC11</option>
+					<option value="12">CCC12</option>
+					<option value="13">CCC13</option>
+					<option value="14">CCC14</option>
+					<option value="15">CCC15</option>
+					<option value="16">CCC16</option>
+					<option value="17">CCC17</option>
+					<option value="18">CCC18</option>
+					<option value="19">CCC19</option>
+					<option value="20">CCC20</option>
+					<option value="21">CCC21</option>
+					<option value="22">CCC22</option>
+					<option value="23">CCC23</option>
+					<option value="24">CCC24</option>
+					<option value="25">CCC25</option>
+					<option value="26">CCC26</option>
+					<option value="27">CCC27</option>
+					<option value="28">CCC28</option>
+					<option value="29">CCC29</option>
+					<option value="30">CCC30</option>
+					<option value="31">CCC31</option>
+					<option value="32">CCC32</option>
+					<option value="33">CCC33</option>
+					<option value="34">CCC34</option>
+					<option value="35">CCC35</option>
+					<option value="36">CCC36</option>
+					<option value="84">CCC84</option>
+					<option value="91">CCC91</option>
+					<option value="103">CCC103</option>
+					<option value="107">CCC107</option>
+					<option value="118">CCC118</option>
+					<option value="122">CCC122</option>
+					<option value="129">CCC129</option>
+					<option value="130">CCC130</option>
+					<option value="132">CCC132</option>
+					<option value="133">CCC133 (Reserved)</option>
+					<option value="200">Attached Below Left</option>
+					<option value="202">Attached Below</option>
+					<option value="214">Attached Above</option>
+					<option value="216">Attached Above Right</option>
+					<option value="218">Below Left</option>
+					<option value="220">Below</option>
+					<option value="222">Below Right</option>
+					<option value="224">Left</option>
+					<option value="226">Right</option>
+					<option value="228">Above Left</option>
+					<option value="230">Above</option>
+					<option value="232">Above Right</option>
+					<option value="233">Double Below</option>
+					<option value="234">Double Above</option>
+					<option value="240">Iota Subscript</option>
+				</select>
+
+				<br>
+
+				<table id="categoryTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Codepoint</th>
+							<th>Character</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </article>
+        </div>
+		
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright"></p>
+        </footer>
+    </div>
+    
+	<!-- BG -->
+    <div id="bg"></div>
+
+	<script src="unicode.js"></script>
+
+	<script>
+		let insertTextInput = $("#insertText");
+		let combTextInput = $("#combText");
+
+		function onPrependClick() {
+			var insert = insertTextInput.val().replace("U+", "");
+			var character = String.fromCodePoint(parseInt(insert, 16));
+			combTextInput.val(character + combTextInput.val());
+		}
+
+		function onAppendClick() {
+			var insert = insertTextInput.val().replace("U+", "");
+			var character = String.fromCodePoint(parseInt(insert, 16));
+			combTextInput.val(combTextInput.val() + character);
+		}
+
+		initializeUnicode().then(function() {
+			toggleLoad(false);
+
+			$("#combCatSelect").change(function() {
+				toggleLoad(true);
+
+				// Get codepoints in selected combining category
+				var searchResults = [];
+				Object.keys(codepointDict).forEach(function(codepoint) {
+					if (codepointDict[codepoint].canonicalCombiningClass == $("#combCatSelect").val()) {
+						searchResults.push({
+							codepoint: codepoint,
+							character: String.fromCodePoint(parseInt(codepoint, 16)),
+							name: codepointDict[codepoint].name
+						});
+					}					
+				});
+
+				// Display results
+				const tableBody = $("#categoryTable tbody");
+				tableBody.empty();
+				$("#categoryTable").show();
+
+				searchResults.forEach(function(result) {
+					if (!result) { return; }
+					var row = $("<tr>");
+					row.append($("<td>").append($("<code></code>").text("U+" + result.codepoint)));
+					row.append($("<td>").text(result.character));
+					row.append($("<td>").text(result.name ?? ""));
+					tableBody.append(row);
+
+					// Shortcut to insert codepoint on click of a result
+					row.click(function() {
+						insertTextInput.val(result.codepoint);
+					});
+				});
+				toggleLoad(false);
+			});
+		});
+	</script>
+
+</body>
+</html>

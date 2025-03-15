@@ -1,0 +1,349 @@
+<html>
+
+<head>
+    <title>Unicode Character List</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <!--[if lte IE 9]><link rel="stylesheet" href="../../assets/css/ie9.css" /><![endif]-->
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+
+    <script src="../assets/js/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <div id="main" style="width: 100%;">
+
+            <article id="research" style="opacity: 1; width: 100%;">
+                <h1>Unicode Character List</h1>
+
+                <br>
+
+                <div class="loading" id="loading">loading</div>
+
+                <label for="browseTypeSelect">Browse by:</label>
+				<select id="browseTypeSelect">
+                    <option value="bidirectionalCategory" selected>Bidirectional Class</option>
+					<option value="block">Block</option>
+					<option value="category">Category</option>
+                    <option value="canonicalCombiningClass">Combining Class</option>
+                </select>
+
+                <br><br>
+
+                <ul class="accordion" data-accordion="open">
+                    <li class="accord" id="browseList">
+                        <div id="bidi-tl">
+                            <div class="accordion-header">Arabic Letter</div>
+                            <div class="accordion-body" name="AL"></div>
+                            <div class="accordion-header">Arabic Number</div>
+                            <div class="accordion-body" name="AN"></div>
+                            <div class="accordion-header">Paragraph Separator</div>
+                            <div class="accordion-body" name="B"></div>
+                            <div class="accordion-header">Boundary Neutral</div>
+                            <div class="accordion-body" name="BN"></div>
+                            <div class="accordion-header">Common Separator</div>
+                            <div class="accordion-body" name="CS"></div>
+                            <div class="accordion-header">European Number</div>
+                            <div class="accordion-body" name="EN"></div>
+                            <div class="accordion-header">European Separator</div>
+                            <div class="accordion-body" name="ES"></div>
+                            <div class="accordion-header">European Terminator</div>
+                            <div class="accordion-body" name="ET"></div>
+                            <div class="accordion-header">First Strong Isolate</div>
+                            <div class="accordion-body" name="FSI"></div>
+                            <div class="accordion-header">Left To Right</div>
+                            <div class="accordion-body" name="L"></div>
+                            <div class="accordion-header">Left To Right Embedding</div>
+                            <div class="accordion-body" name="LRE"></div>
+                            <div class="accordion-header">Left To Right Isolate</div>
+                            <div class="accordion-body" name="LRI"></div>
+                            <div class="accordion-header">Left To Right Override</div>
+                            <div class="accordion-body" name="LRO"></div>
+                            <div class="accordion-header">Nonspacing Mark</div>
+                            <div class="accordion-body" name="NSM"></div>
+                            <div class="accordion-header">Other Neutral</div>
+                            <div class="accordion-body" name="ON"></div>
+                            <div class="accordion-header">Pop Directional Format</div>
+                            <div class="accordion-body" name="PDF"></div>
+                            <div class="accordion-header">Pop Directional Isolate</div>
+                            <div class="accordion-body" name="PDI"></div>
+                            <div class="accordion-header">Right To Left</div>
+                            <div class="accordion-body" name="R"></div>
+                            <div class="accordion-header">Right To Left Embedding</div>
+                            <div class="accordion-body" name="RLE"></div>
+                            <div class="accordion-header">Right To Left Isolate</div>
+                            <div class="accordion-body" name="RLI"></div>
+                            <div class="accordion-header">Right To Left OverrbidirectionalCategoryide</div>
+                            <div class="accordion-body" name="RLO"></div>
+                            <div class="accordion-header">Segment Separator</div>
+                            <div class="accordion-body" name="S"></div>
+                            <div class="accordion-header">White Space</div>
+                            <div class="accordion-body" name="WS"></div>
+                        </div>
+                    </li>
+                </ul>
+
+
+            </article>
+        </div>
+		
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright"></p>
+        </footer>
+    </div>
+    
+	<!-- BG -->
+    <div id="bg"></div>
+
+    <script src="../assets/js/accordion.js"></script>
+    <script src="unicode.js"></script>
+	<script>
+		initializeUnicode().then(function() {
+			toggleLoad(false);
+
+			// TODO: generate modal on-click of each child element 
+
+            function onHeaderClick() {
+                $(this).next().empty();
+
+                // Create new div to reduce performance hit from repeated DOM updates
+                var div = $("<div></div>");
+                div.css({ "margin": "10px 0" });
+                div.addClass("block-grid");
+        
+                var grid = $("<div></div>");
+                grid.css({
+                    "display": "grid",
+                    "grid-template-columns": "repeat(auto-fill, minmax(100px, 1fr))",
+                    "gap": "10px"
+                });
+
+                var nameVal = $(event.target)[0].nextElementSibling.attributes["name"].nodeValue;
+                var searchAttr = $("#browseTypeSelect").val();
+
+                Object.entries(codepointDict).forEach(([key, value]) => {
+                    if (value[searchAttr] == nameVal) {
+                        var cell = $("<div></div>");
+                        cell.css({
+                            "display": "flex",
+                            "flex-direction": "column",
+                            "text-align": "center",
+                            "padding": "10px",
+                            "border": "1px solid #ddd",
+                            "border-radius": "10px",
+                            "box-shadow": "0 0 10px rgba(0, 0, 0, 0.1)",
+                            "width": "100%"
+                        });
+            
+                        var character = $("<div></div>");
+                        character.css({ "font-size": "52px" });
+                        character.text(String.fromCodePoint(parseInt(key, 16)));
+            
+                        var hexCode = $("<div></div>");
+                        hexCode.css({
+                            "font-size": "16px",
+                            "margin-top": "auto"
+                        });
+                        hexCode.text(`U+${key.toUpperCase().padStart(4, '0')}`);
+
+                        cell.on("click", function() { displayModal(value); });
+            
+                        cell.append(character);
+                        cell.append(hexCode);
+                        grid.append(cell);
+                    }
+                });
+
+                div.append(grid);
+
+                // Append to accordion body element
+                $(this).next().append(div);
+            }
+            $(".accordion-header").click(onHeaderClick);
+
+            $("#browseTypeSelect").change(function() {
+                $("#browseList").empty();
+
+                var div = $("<div></div>")
+                var selectedAttr = $("#browseTypeSelect").val();
+                
+                switch(selectedAttr) {
+                    case "bidirectionalCategory":
+                        var uniqueBidis = new Set();
+                        Object.entries(codepointDict).forEach(([key, value]) => { uniqueBidis.add(value.bidirectionalCategory); });
+
+                        Array.from(uniqueBidis).sort().forEach(bidi => {
+                            var aliasName;
+                            aliases.every(a => {
+                                if (a.property == "bc" && a.shortName == bidi) {
+                                    aliasName = a.longName.replaceAll("_", " ");
+                                    return false;
+                                }
+                                return true;
+                            });
+
+                            var header = $("<div></div>").addClass("accordion-header").text(aliasName);
+                            var body = $("<div></div>").addClass("accordion-body").attr("name", bidi);
+                            header.click(onHeaderClick);
+                            div.append(header);
+                            div.append(body);
+                        });
+
+                        $("#browseList").append(div);
+                        break;
+
+                    // Order blocks by codepoint numerically instead of alphabetically
+                    case "block":
+                        var uniqueBlocks = new Map();
+                        Object.entries(codepointDict).forEach(([key, value]) => { 
+                            if (!uniqueBlocks.has(value.block)) {
+                                uniqueBlocks.set(value.block, parseInt(key, 16));
+                            }
+                        });
+
+                        Array.from(uniqueBlocks.entries()).sort((a, b) => a[1] - b[1]).forEach(entry => {
+                            var header = $("<div></div>").addClass("accordion-header").text(entry[0]);
+                            var body = $("<div></div>").addClass("accordion-body").attr("name", entry[0]);
+                            header.click(onHeaderClick);
+                            div.append(header);
+                            div.append(body);
+                        });
+
+                        $("#browseList").append(div);
+                        break;
+
+                    case "category":
+                        var uniqueCategories = [];
+                        Object.entries(codepointDict).forEach(([key, value]) => { 
+                            if (!uniqueCategories.includes(value.category)) {
+                                uniqueCategories.push(value.category);
+                            }
+                        });
+
+                        uniqueCategories.forEach(category => {
+                            var aliasCategory;
+                            aliases.every(a => {
+                                if (a.property == "gc" && a.shortName == category) {
+                                    aliasCategory = a.longName.replaceAll("_", " ");
+                                    return false;
+                                }
+                                return true;
+                            });
+
+                            var header = $("<div></div>").addClass("accordion-header").text(aliasCategory);
+                            var body = $("<div></div>").addClass("accordion-body").attr("name", category);
+                            header.click(onHeaderClick);
+                            div.append(header);
+                            div.append(body);
+                        });
+
+                        $("#browseList").append(div);
+                        break;
+
+                    case "canonicalCombiningClass":
+                        var uniqueCC = [];
+                        Object.entries(codepointDict).forEach(([key, value]) => { 
+                            if (!uniqueCC.includes(value.canonicalCombiningClass)) {
+                                uniqueCC.push(value.canonicalCombiningClass);
+                            }
+                        });
+
+                        uniqueCC.forEach(cc => {
+                            var aliasCC;
+                            aliases.every(a => {
+                                if (a.property == "ccc" && a.class == cc) {
+                                    aliasCC = a.longName.replaceAll("_", " ");
+                                    return false;
+                                }
+                                return true;
+                            });
+
+                            var header = $("<div></div>").addClass("accordion-header").text(aliasCC);
+                            var body = $("<div></div>").addClass("accordion-body").attr("name", cc);
+                            header.click(onHeaderClick);
+                            div.append(header);
+                            div.append(body);
+                        });
+
+                        $("#browseList").append(div);
+                        break;
+                }
+                accordion();
+
+                // TODO: load category headers - then onclick - generate browse grid for each glyph - onclick modal
+                // $("#bidi-tl").css('display',"block");
+
+                // Object.keys(bidiMap).forEach(function(bidi) {
+                    
+                //    
+                //     $("#browseList").append(div1);
+                //     
+
+                //     Object.keys(codepointDict).forEach(function(codepoint) {
+                //         if (codepointDict[codepoint].bidirectionalCategory == bidi) {
+                //             div2.append($("<p>").text(codepointDict[codepoint].name));
+                //         }				
+                //     });
+                //     $("#browseList").append(div2);
+                // });
+
+                // var topLevelResults = [];
+                // switch($("#browseTypeSelect").val()) {
+                //     case "bidi":
+                        
+
+                //         // codepointDict[].bidirectionalCategory
+                //         // searchResults.push({
+                //         //     codepoint: codepoint,
+                //         //     character: String.fromCodePoint(parseInt(codepoint, 16)),
+                //         //     name: codepointDict[codepoint].name
+                //         // });
+
+                //         break;
+                // } 
+
+                
+
+                
+
+                
+
+				// var searchResults = [];
+				// Object.keys(codepointDict).forEach(function(codepoint) {
+				// 	if (codepointDict[codepoint].canonicalCombiningClass == $("#combCatSelect").val()) {
+				// 		searchResults.push({
+				// 			codepoint: codepoint,
+				// 			character: String.fromCodePoint(parseInt(codepoint, 16)),
+				// 			name: codepointDict[codepoint].name
+				// 		});
+				// 	}					
+				// });
+
+				// const tableBody = $("#categoryTable tbody");
+				// tableBody.empty();
+				// $("#categoryTable").show();
+
+				// searchResults.forEach(function(result) {
+				// 	if (!result) { return; }
+				// 	var row = $("<tr>");
+				// 	row.append($("<td>").append($("<code></code>").text("U+" + result.codepoint)));
+				// 	row.append($("<td>").text(result.character));
+				// 	row.append($("<td>").text(result.name ?? ""));
+				// 	tableBody.append(row);
+				// 	row.click(function() {
+				// 		insertTextInput.val(result.codepoint);
+				// 	});
+				// });
+				toggleLoad(false);
+			});
+		});
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<html>
+
+<head>
+    <title>Unicode Search</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <!--[if lte IE 9]><link rel="stylesheet" href="../../assets/css/ie9.css" /><![endif]-->
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+
+    <script src="../assets/js/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <div id="main" style="width: 100%;">
+
+            <article id="research" style="opacity: 1; width: 100%;">
+                <h1>Unicode Character Search</h1>
+
+                <br>
+
+                <div class="loading" id="loading">loading</div>
+
+                <input type="text" id="searchBox">
+                
+                <br><br>
+
+                <table id="searchResultsTable">
+                    <thead>
+                        <tr>
+                            <th>Codepoint</th>
+                            <th>Character</th>
+                            <th>Name</th>
+                            <th>Aliases</th>
+                            <th>Cross-References</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </article>
+        </div>
+		
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright"></p>
+        </footer>
+    </div>
+    
+	<!-- BG -->
+    <div id="bg"></div>
+
+    <script src="unicode.js"></script>
+
+	<script>
+		initializeUnicode().then(function() {
+			toggleLoad(false);
+
+			let timeoutId = null;
+            var searchDelay = 1000;
+
+            $("#searchBox").on("input", function() {
+                toggleLoad(false);
+                clearTimeout(timeoutId);
+
+                // Start search after 1 second of no input change
+                timeoutId = setTimeout(function() {
+                    toggleLoad(true);
+                    var searchTerm = $("#searchBox").val();
+
+                    // Abort search
+                    if (searchTerm.length < 1) { toggleLoad(false); return; }
+
+                    // Perform keyword search
+                    if (searchTerm.length > 1) { searchTerm = searchTerm.toLowerCase(); }
+
+                    const searchResults = [];
+                    Object.entries(codepointDict).forEach(([key, value]) => {
+                        var fieldsToSearch;
+
+                        // Search for character directly
+                        if (searchTerm.length == 1) {
+                            fieldsToSearch = [ String.fromCodePoint(parseInt(key, 16)) ];
+                            searchDelay = 0;
+                        }
+                        else {
+                            fieldsToSearch = [
+                                String.fromCodePoint(parseInt(key, 16)),
+                                key,
+                                (value.name ?? '').toLowerCase(),
+                                (value.aliases ?? []).join(' ').toLowerCase(),
+                                (value.crossReferences ?? []).join(' ').toLowerCase(),
+                                (value.comments ?? []).join(' ').toLowerCase(),
+                            ];
+                        }
+
+                        if (fieldsToSearch.some(function(field) { return field.includes(searchTerm); })) {
+                            searchResults.push({
+                                character: String.fromCodePoint(parseInt(key, 16)),
+                                codepoint: key,
+                                name: value.name,
+                                aliases: value.aliases,
+                                crossReferences: value.crossReferences,
+                                comments: value.comments
+                            });
+                        }
+                    });
+
+                // Display search results
+                const tableBody = $("#searchResultsTable tbody");
+                tableBody.empty();
+
+                searchResults.forEach(function(result) {
+                    if (!result) { return; }
+                    const row = $("<tr>");
+                    row.append($("<td>").text(result.character));
+                    row.append($("<td>").append($("<code></code>").text("U+" + result.codepoint)));
+                    row.append($("<td>").text(result.name));
+                    row.append($("<td>").text((result.aliases)));
+                    row.append($("<td>").text((result.crossReferences)));
+                    row.append($("<td>").text((result.comments)));
+                    tableBody.append(row);
+
+                    row.click(function() {
+                        displayModal(result);
+					});
+                });
+
+                toggleLoad(false);
+                }, searchDelay);
+            });
+		});
+	</script>
+
+</body>
+</html>
