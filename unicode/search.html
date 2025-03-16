@@ -32,8 +32,8 @@
                 <table id="searchResultsTable">
                     <thead>
                         <tr>
-                            <th>Codepoint</th>
                             <th>Character</th>
+                            <th>Codepoint</th>
                             <th>Name</th>
                             <th>Aliases</th>
                             <th>Cross-References</th>
@@ -91,7 +91,7 @@
                         else {
                             fieldsToSearch = [
                                 String.fromCodePoint(parseInt(key, 16)),
-                                key,
+                                "u+" + key,
                                 (value.name ?? '').toLowerCase(),
                                 (value.aliases ?? []).join(' ').toLowerCase(),
                                 (value.crossReferences ?? []).join(' ').toLowerCase(),
@@ -127,7 +127,7 @@
                     tableBody.append(row);
 
                     row.click(function() {
-                        displayModal(result);
+                        displayModal(codepointDict[result.codepoint]);
 					});
                 });
 
