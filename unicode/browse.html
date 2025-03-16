@@ -274,72 +274,8 @@
                         $("#browseList").append(div);
                         break;
                 }
+                
                 accordion();
-
-                // TODO: load category headers - then onclick - generate browse grid for each glyph - onclick modal
-                // $("#bidi-tl").css('display',"block");
-
-                // Object.keys(bidiMap).forEach(function(bidi) {
-                    
-                //    
-                //     $("#browseList").append(div1);
-                //     
-
-                //     Object.keys(codepointDict).forEach(function(codepoint) {
-                //         if (codepointDict[codepoint].bidirectionalCategory == bidi) {
-                //             div2.append($("<p>").text(codepointDict[codepoint].name));
-                //         }				
-                //     });
-                //     $("#browseList").append(div2);
-                // });
-
-                // var topLevelResults = [];
-                // switch($("#browseTypeSelect").val()) {
-                //     case "bidi":
-                        
-
-                //         // codepointDict[].bidirectionalCategory
-                //         // searchResults.push({
-                //         //     codepoint: codepoint,
-                //         //     character: String.fromCodePoint(parseInt(codepoint, 16)),
-                //         //     name: codepointDict[codepoint].name
-                //         // });
-
-                //         break;
-                // } 
-
-                
-
-                
-
-                
-
-				// var searchResults = [];
-				// Object.keys(codepointDict).forEach(function(codepoint) {
-				// 	if (codepointDict[codepoint].canonicalCombiningClass == $("#combCatSelect").val()) {
-				// 		searchResults.push({
-				// 			codepoint: codepoint,
-				// 			character: String.fromCodePoint(parseInt(codepoint, 16)),
-				// 			name: codepointDict[codepoint].name
-				// 		});
-				// 	}					
-				// });
-
-				// const tableBody = $("#categoryTable tbody");
-				// tableBody.empty();
-				// $("#categoryTable").show();
-
-				// searchResults.forEach(function(result) {
-				// 	if (!result) { return; }
-				// 	var row = $("<tr>");
-				// 	row.append($("<td>").append($("<code></code>").text("U+" + result.codepoint)));
-				// 	row.append($("<td>").text(result.character));
-				// 	row.append($("<td>").text(result.name ?? ""));
-				// 	tableBody.append(row);
-				// 	row.click(function() {
-				// 		insertTextInput.val(result.codepoint);
-				// 	});
-				// });
 				toggleLoad(false);
 			});
 		});

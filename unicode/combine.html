@@ -25,10 +25,19 @@
 
 				<div class="loading" id="loading">loading</div>
 
-				<label for="combText">Combined Output:</label>
-				<input type="text" id="combText" value="">
+				<form>
+					<div class="field half first">
+						<label for="combText">Combined Output: (Rendered)</label>
+						<textarea id="combText" value=""></textarea>
+					</div>
 
-				<br><br>
+					<div class="field half">
+						<label for="combCodepoints" class="align-right">Combined Output: (Codepoints)</label>
+						<textarea id="combCodepoints" value=""></textarea>
+					</div>
+				</form>
+				
+				<br><br><br><br><br>
 
 				<label for="insertText">Insert character by codepoint:</label>
 				<input type="text" id="insertText" value="" placeholder="U+00000">
@@ -136,12 +145,14 @@
 			var insert = insertTextInput.val().replace("U+", "");
 			var character = String.fromCodePoint(parseInt(insert, 16));
 			combTextInput.val(character + combTextInput.val());
+			combTextInput.trigger("input");
 		}
 
 		function onAppendClick() {
 			var insert = insertTextInput.val().replace("U+", "");
 			var character = String.fromCodePoint(parseInt(insert, 16));
 			combTextInput.val(combTextInput.val() + character);
+			combTextInput.trigger("input");
 		}
 
 		initializeUnicode().then(function() {
@@ -177,10 +188,37 @@
 
 					// Shortcut to insert codepoint on click of a result
 					row.click(function() {
-						insertTextInput.val(result.codepoint);
+						insertTextInput.val("U+" + result.codepoint);
 					});
 				});
 				toggleLoad(false);
+			});
+			
+			$("#combText").on("input", function() {
+				var codepointText = $("#combCodepoints");
+				var newText = "";
+
+				var codepointList = Array.from($(this).val()).map(char => char.codePointAt(0));
+				codepointList.forEach(function(codepoint) {
+					newText += "U+" + codepoint.toString(16).toUpperCase().padStart(4, "0") + " ";
+				});
+
+				codepointText.val(newText);
+			});
+
+			$("#combCodepoints").on("input", function() {
+				var renderedText = $("#combText");
+				var newText = "";
+
+				var codepointList = $(this).val().split(" ");
+				codepointList.every(codepoint => {
+					codepoint = codepoint.replace("U+", "");
+					try { newText += String.fromCodePoint(parseInt(codepoint, 16)); }
+					catch(err) {  }
+					return true;
+				});
+
+				renderedText.val(newText);
 			});
 		});
 	</script>
