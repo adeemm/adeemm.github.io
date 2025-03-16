@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Unicode Watermark</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+	<link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <!--[if lte IE 9]><link rel="stylesheet" href="../assets/css/ie9.css" /><![endif]-->
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+    <script src="../assets/js/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <div id="main" style="width: 100%;">
+
+			<article id="watermark" style="opacity: 1; width: 100%;">
+                <h1 class="major">Unicode Text Watermark</h1>
+
+				<p>
+					Smuggle hidden data inside text messages using &nbsp;<strong>Variation Selectors</strong>
+				</p>
+
+				<br>
+
+				<form>
+					<div class="field half first">
+						<label for="watermarkText">Watermark Text:</label>
+						<input type="text" id="watermarkText" value=""></input>
+					</div>
+
+					<div class="field half">
+						<label for="messageText">Message Text:</label>
+						<input type="text" id="messageText" value=""></input>
+					</div>
+				</form>
+
+				<a href="#" class="button small special icon fa-magic" style="padding-left: 1rem;" onclick="encodeWatermark();"> Encode Watermark</a>
+
+				<br><br><br>
+
+				<form>
+					<div class="field">
+						<label for="encodedText">Encoded Text:</label>
+						<input type="text" id="encodedText" value=""></input>
+						<br>
+						<a href="#" class="button small special icon fa-unlock" style="padding-left: 1rem;" onclick="decodeWatermark();"> Decode Text</a>
+					</div>
+				</form>
+
+				<pre id="decodedWatermarkText"></pre>
+            </article>
+			
+        </div>
+		
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright"></p>
+        </footer>
+    </div>
+    
+	<!-- BG -->
+    <div id="bg"></div>
+
+	<script src="../assets/js/animatedWebCursorLite.js"></script>
+	<script src="unicode.js"></script>
+
+	<script>
+		var watermarkTextInput = $("#watermarkText");
+		var messageTextInput = $("#messageText");
+		var encodedTextInput = $("#encodedText");
+
+		// Encode watermark into an "invisible" string of variation selectors
+		// Uses UTF-8 encoding so that each byte (0–255) is encoded as a corresponding variation selector:
+		// Byte 0–15 => U+FE00 - U+FE0F
+		// Byte 16–255 => U+E0100 - U+E01EF
+		function encodeWatermark() {
+			var watermark = watermarkTextInput.val();
+			var message = messageTextInput.val();
+			var encoder = new TextEncoder();
+  			var bytes = encoder.encode(watermark);
+			var encoded = "";
+			for (var byte of bytes) {
+				// First block: U+FE00 to U+FE0F
+				if (byte < 16) { encoded += String.fromCodePoint(0xFE00 + byte); }
+
+				// Second block: U+E0100 to U+E01EF
+				else { encoded += String.fromCodePoint(0xE0100 + (byte - 16)); }
+			}
+
+			// Insert the encoded watermark into the middle of the message
+			var middleIndex = Math.floor(message.length / 2);
+			var finalMessage = message.slice(0, middleIndex) + encoded + message.slice(middleIndex);
+
+			navigator.clipboard.writeText(finalMessage);
+			encodedTextInput.val(finalMessage);
+			alert("Encoded message copied to clipboard!");
+		}
+
+		function decodeWatermark() {
+			var message = encodedTextInput.val();
+			var bytes = [];
+
+			for (var char of message) {
+				var codepoint = char.codePointAt(0);
+				var byte;
+				if (codepoint >= 0xFE00 && codepoint <= 0xFE0F) { byte = codepoint - 0xFE00; }
+				else if (codepoint >= 0xE0100 && codepoint <= 0xE01EF) { byte = (codepoint - 0xE0100) + 16; } 
+				else { continue; }
+				bytes.push(byte);
+			}
+
+			var decoder = new TextDecoder();
+			var decoded = decoder.decode(new Uint8Array(bytes));
+			if (decoded) {
+				$("#decodedWatermarkText").text("Decoded message: " + decoded);
+			}
+		}
+	</script>
+
+</body>
+</html>

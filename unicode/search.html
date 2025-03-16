@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <html>
 
 <head>
@@ -8,9 +9,7 @@
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
     <!--[if lte IE 9]><link rel="stylesheet" href="../../assets/css/ie9.css" /><![endif]-->
     <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
-
     <script src="../assets/js/jquery.min.js"></script>
-
 </head>
 
 <body>
@@ -18,7 +17,7 @@
 
         <div id="main" style="width: 100%;">
 
-            <article id="research" style="opacity: 1; width: 100%;">
+            <article id="search" style="opacity: 1; width: 100%;">
                 <h1>Unicode Character Search</h1>
 
                 <br>
@@ -91,7 +90,7 @@
                         else {
                             fieldsToSearch = [
                                 String.fromCodePoint(parseInt(key, 16)),
-                                "u+" + key,
+                                "u+" + key.toLowerCase(),
                                 (value.name ?? '').toLowerCase(),
                                 (value.aliases ?? []).join(' ').toLowerCase(),
                                 (value.crossReferences ?? []).join(' ').toLowerCase(),
