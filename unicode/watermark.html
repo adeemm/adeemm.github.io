@@ -18,7 +18,7 @@
         <div id="main" style="width: 100%;">
 
 			<article id="watermark" style="opacity: 1; width: 100%;">
-                <h1 class="major">Unicode Text Watermark</h1>
+                <h1>Text Watermark</h1>
 
 				<p>
 					Smuggle hidden data inside text messages using &nbsp;<strong>Variation Selectors</strong>
@@ -95,8 +95,8 @@
 			var middleIndex = Math.floor(message.length / 2);
 			var finalMessage = message.slice(0, middleIndex) + encoded + message.slice(middleIndex);
 
-			navigator.clipboard.writeText(finalMessage);
 			encodedTextInput.val(finalMessage);
+			navigator.clipboard.writeText(finalMessage);
 			alert("Encoded message copied to clipboard!");
 		}
 
