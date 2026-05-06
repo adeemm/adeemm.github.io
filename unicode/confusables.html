@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Unicode Confusables</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <!--[if lte IE 9]><link rel="stylesheet" href="../../assets/css/ie9.css" /><![endif]-->
+    <noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+    <script src="../assets/js/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="wrapper">
+
+        <div id="main" style="width: 100%;">
+
+            <article id="search" style="opacity: 1; width: 100%; overflow-x: scroll;">
+                <h1>Confusable Characters</h1>
+
+                <br>
+
+                <div class="loading" id="loading">loading</div>
+
+                <input type="text" id="searchBox">
+                
+                <br><br>
+
+                <code id="randomizedOutput" style="font-size: x-large;"></code>
+
+                <br><br>
+
+                <table id="searchResultsTable">
+                    <tbody></tbody>
+                </table>
+
+            </article>
+        </div>
+		
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright"></p>
+        </footer>
+    </div>
+    
+	<!-- BG -->
+    <div id="bg"></div>
+
+    <script src="unicode.js"></script>
+
+	<script>
+		initializeUnicode().then(function() {
+			toggleLoad(false);
+
+            $("#searchBox").on("input", function() {
+                var searchTerm = $("#searchBox").val();
+                if (!searchTerm) { return; }
+
+                const tableBody = $("#searchResultsTable tbody");
+                tableBody.empty();
+
+                const outputElement = $("#randomizedOutput");
+                var outputStr = "";
+
+                for (let i = 0; i < searchTerm.length; i++) {
+                    const bodyRow = $("<tr>");
+                    var term = searchTerm[i];
+                    bodyRow.append($("<td>").text(term));
+
+                    var conf = confusables[term];
+                    var emoj = confusablesLite[term.toUpperCase()];
+                    if (!conf && !emoj) { continue; }
+
+                    // if (emoj) {
+                    //     emoj.forEach(element => {
+                    //         conf.push({"c": element});
+                    //     });
+                    // }
+                    outputStr += conf[Math.floor(Math.random() * conf.length)]["c"];
+
+                    if (conf) {
+                        for (let j = 0; j < conf.length; j++) {
+                            // td.click(function() {
+                            //     displayModal(codepointDict[conf[j]["c"].codePointAt(0).toString(16).toUpperCase().padStart(4, "0")]);
+                            // });
+                            bodyRow.append($("<td>").text(conf[j]["c"]));
+                        }
+                    }
+                    if (emoj) {
+                        for (let j = 0; j < emoj.length; j++) {
+                            bodyRow.append($("<td>").text(emoj[j]));
+                        }
+                    }
+                    tableBody.append(bodyRow);
+                }
+                outputElement.text(outputStr);
+
+                // searchTerm.forEach(function(term) {
+                //     if (!term) { return; }
+                //     const row = $("<tr>");
+                //     row.append($("<td>").text(result["c"]));
+                //     row.append($("<td>").append($("<code></code>").text("U+" + result.codepoint)));
+                //     row.append($("<td>").text(result["n"]));
+                //     tableBody.append(row);
+
+                //     row.click(function() {
+                //         displayModal(codepointDict[result.codepoint]);
+				// 	});
+                // });
+
+            });
+		});
+	</script>
+
+</body>
+</html>

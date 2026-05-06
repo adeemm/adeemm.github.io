@@ -9,6 +9,12 @@ function initializeUnicode() {
 			}),
 			$.getJSON("json/CodepointDict.json", function(data) {
 				codepointDict = data;
+			}),
+            $.getJSON("json/Confusables.json", function(data) {
+				confusables = data;
+			}),
+            $.getJSON("json/ConfusablesEmoji.json", function(data) {
+				confusablesLite = data;
 			})
 		).then(function() {
 			resolve();
@@ -18,6 +24,7 @@ function initializeUnicode() {
 
 // Generate CodepointDict.json from JSON data files - https://github.com/iLib-js/UCD
 // Only needed after Unicode update
+// Confusables.json generated from confusable_homoglyphs
 function generateCodepointDict() {
     var names = []
     var unicodeData = []
