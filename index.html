@@ -38,16 +38,91 @@
 				</div>
 				<nav>
 					<ul>
-						<li><a href="#unicode">Unicode Tools</a></li>
-						<!-- <li><a href="#essays">Essay Typer</a></li> -->
-						<li><a href="#fileMenu">P2P File Sharing</a></li>
 						<li><a href="#IPLookup">IP Enrichment</a></li>
+						<li><a href="#search">Slop-less Search</a></li>
+						<li><a href="#fileMenu">P2P File Sharing</a></li>
+						<li><a href="#unicode">Unicode Tools</a></li>
 					</ul>
 				</nav>
 			</header>
 
 			<!-- Main -->
 			<div id="main">
+
+				<!-- IP Enrichment -->
+				<article id="IPLookup">
+					<h2 class="major">IP Lookup</h2>
+					<p>
+						<div class="field">
+							<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X" />
+							<br>
+							<center><button onclick="lookupIP($('#ipText').val())">Submit</button></center>
+						</div>
+						<hr id="ipBar" style="display:none;" />
+						<div id="ipOutput"></div>
+					</p>
+				</article>
+
+				<!-- Slop-less Search -->
+				<article id="search">
+					<h2 class="major">Slop-Less Search</h2>
+					<blockquote>Perform a web search without the AI-slop results</blockquote>
+
+					<form>
+						<div class="field" style="padding: 0;">
+							<label for="searchTypeSelect">Search Type:</label>
+							<select id="searchTypeSelect">
+								<option value="">-</option>
+								<option value="ddg">DuckDuckGo - (Results Before 2020)</option>
+								<option value="reddit">Reddit - CSE</option>
+								<option value="searxng">SearXNG</option>
+								<option value="stackexch">Stack Exchange</option>
+								<option value="wiki">Wikipedia</option>
+							</select>
+						</div>
+						<div class="field">
+							<label for="searchQueryText">Search Query:</label>
+							<input type="text" id="searchQueryText" value="">
+						</div>
+						<div class="field">
+							<center><div class="button primary icon solid fa-search" onclick="performSlopSearch($('#searchTypeSelect').val(), $('#searchQueryText').val())">Search</div></center>
+						</div>
+					</form>
+
+					<hr id="essayBar" style="display:none;" />
+					<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
+					<p id="essayError" style="display:none;"></p>
+					<div id="output"></div>
+
+					<a href="#searchInfo" class="icon fa-question-circle" style="float:right;"></a>
+				</article>
+
+				<!-- SearchInfo -->
+				<article id="searchInfo">
+					<h2 class="major">What is AI-Slop?</h2>
+					<p>
+						Large-Language-Models (LLMs) are a type of artificial intelligence (AI) designed to generate and understand language / text.
+						These models are often misued to generate outputs that appear correct without any human editing or manual intervention.
+						Text outputs can subsequently be used for income generation via advertisement revenue and <a href="https://en.wikipedia.org/wiki/Spamdexing">search engine optimization (SEO) poisoning</a>, or by influencing public opinion
+						with propaganda and <a href="https://arxiv.org/pdf/2605.21540v1">synthetic political discourse</a> using <a href="https://en.wikipedia.org/wiki/Social_bot">bot social media accounts</a>.
+
+						Vauge, low-effort prompting and a lack of specificity often leads these computer models to generate similar outputs that statistically average the patterns observed from their training data. 
+						LLM-slop can be identified by looking for some of the following writing patterns:
+						<ol>
+							<li><b>Binary contrasts:</b> "It's not X, it's Y."</li>
+							<li><b>Throat-clearing openers:</b> "Here's the thing" / "Let me be clear"</li>
+							<li><b>Faux-insight:</b> "What nobody tells you" / "The part that everyone misses"</li>
+							<li><b>Colon reveals:</b> "The best part: it learns."</li>
+							<li><b>Dramatic fragments:</b> "That's it. That's the whole thing."</li>
+							<li><b>Superficial analysis:</b> "...highlighting the team's commitment to innovation"</li>
+							<li><b>Importance puffery:</b> "...marks a pivotal moment" / "a testament to"</li>
+							<li><b>Synonym cycling:</b> "The agent handles your email. The assistant drafts replies..."</li>
+							<li><b>Fake-profound endings:</b> "The future isn't coming. It's already here."</li>
+							<li><b>Em dash usage:</b> "—"</li>
+						</ol>
+					</p>
+					<p><a href="https://xkcd.com/1838/" target="_blank">Relevant XKCD</a></p>
+				</article>
 
 				<!-- Unicode Stuff -->
 				<article id="unicode">
@@ -63,22 +138,6 @@
 
 					<p><a href="https://xkcd.com/1726/" target="_blank">Relevant XKCD</a></p>
 
-				</article>
-
-				<!-- Essay -->
-				<article id="essays">
-					<h2 class="major">Essay Typer</h2>
-					<p>
-						<div class="field">
-							<input type="text" name="essaySubject" id="essaySubject" value="" placeholder="Subject" />
-							<br>
-							<center><button onclick="getWiki($('#essaySubject').val())">Type Essay</button></center>
-						</div>
-						<hr id="essayBar" style="display:none;" />
-						<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
-						<p id="essayError" style="display:none;"></p>
-						<div id="output"></div>
-					</p>
 				</article>
 
 				<!-- FileMenu -->
@@ -202,20 +261,6 @@
 					</p>
 				</article>
 
-				<!-- IP Enrichment -->
-				<article id="IPLookup">
-					<h2 class="major">IP Lookup</h2>
-					<p>
-						<div class="field">
-							<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X" />
-							<br>
-							<center><button onclick="lookupIP($('#ipText').val())">Submit</button></center>
-						</div>
-						<hr id="ipBar" style="display:none;" />
-						<div id="ipOutput"></div>
-					</p>
-				</article>
-
 			</div>
 
 			<!-- Footer -->
@@ -234,7 +279,7 @@
 		<script src="assets/js/animatedWebCursorLite.js"></script>
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
-		<script src="assets/js/essayTyper.js"></script>
+		<script src="assets/js/searcher.js"></script>
 		<script src="assets/js/simplepeer.min.js"></script>
 		<script src="assets/js/fileTransfer.js"></script>
 		<script src="assets/js/ipLookup.js"></script>
