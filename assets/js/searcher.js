@@ -1,3 +1,17 @@
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substring(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+
+
 var searxInstances = [];
 function handleSearxInstances(query) {
     if (searxInstances.length == 0) {
@@ -29,14 +43,22 @@ function openRandomSearx(query) {
     window.open((randomElement + `search?q=${query}`), '_blank').focus();
 }
 
-function performSlopSearch(searchType, query) {
+function performSlopSearch(isSearchRedirect, searchType, query) {
     if(query.trim() == '')
         alert("Please enter a search query first");
 
     encodedQuery = encodeURI(query);
 
+    if (isSearchRedirect) {
+        window.open =  function (url, name) {
+            window.location.href = url;
+            var override = {};
+            override.focus = function(){return};
+            return override;
+        }
+    }
+
     switch(searchType) {
-        
         case "ddg":
             window.open(`https://noai.duckduckgo.com/?q=${encodedQuery}&df=2000-01-01..2021-01-01&noai=1&ia=web`, '_blank').focus();
             break;
@@ -130,4 +152,13 @@ function getWiki(page) {
             toggleLoad(false);
         }
     });
+}
+
+
+// Handle search engine proxy
+var paramToggle = findGetParameter("search");
+var paramType = findGetParameter("type");
+var paramQuery = findGetParameter("q");
+if (paramToggle == "true" && paramType && paramQuery) {
+    performSlopSearch(true, paramType, paramQuery);
 }

@@ -71,7 +71,7 @@
 					<form>
 						<div class="field" style="padding: 0;">
 							<label for="searchTypeSelect">Search Type:</label>
-							<select id="searchTypeSelect">
+							<select id="searchTypeSelect" onchange="$('#engineFormatText').text(`https://adeem.co/?search=true&type=${$('#searchTypeSelect').val()}&q=%s`);">
 								<option value="">-</option>
 								<option value="ddg">DuckDuckGo - (Results Before 2020)</option>
 								<option value="reddit">Reddit - CSE</option>
@@ -85,7 +85,12 @@
 							<input type="text" id="searchQueryText" value="">
 						</div>
 						<div class="field">
-							<center><div class="button primary icon solid fa-search" onclick="performSlopSearch($('#searchTypeSelect').val(), $('#searchQueryText').val())">Search</div></center>
+							<center>
+								<div class="button primary icon solid fa-search" onclick="performSlopSearch($('#searchTypeSelect').val(), $('#searchQueryText').val());">Search</div>
+								<br><br><br><br>
+								<label for="engineFormatText">Browser Search Engine Format:</label>
+								<code id="engineFormatText">https://adeem.co/?search=true&type=ddg&q=%s</code>
+							</center>
 						</div>
 					</form>
 
