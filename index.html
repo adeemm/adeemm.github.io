@@ -189,7 +189,8 @@
 						can be established and data can start passing directly between them. Normally, a signaling server is used to send the
 						initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
 						instance), so I decided to let the users send this data directly to each other. To make this feasible,
-						the handshake had to be heavily compressed. The "code" generated is actually a key linked to encoded JSON handshake data.
+						the handshake is heavily compressed and boilerplate data is reconstructed client-side. For additional ease-of-use,
+						the "short-code" generated is an even shorter key linked to handshake data via a 3rd party paste site.
 						Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
 						so sending data directly between the two peers isn't possible.
 					</p>
@@ -202,13 +203,22 @@
 						<div class="field" id="shareFileForm">
 							<center>
 								<div id="sendOffer">
-									<label for="shareHashOutput">Send this code to the recipient:</label>
-									<input type="text" id="shareHashOutput" value="" placeholder="Generating.... Please wait a moment"/>
+									<label>Send this code to the recipient:</label>
+									<div class="code-tabs" id="shareCodeTabs">
+										<button type="button" data-style="words" aria-pressed="true">Words</button>
+										<button type="button" data-style="terse" aria-pressed="false">Base32</button>
+										<button type="button" data-style="cjk" aria-pressed="false">CJK</button>
+										<button type="button" data-style="b64" aria-pressed="false">Link</button>
+										<button type="button" data-style="short" aria-pressed="false">Short-code</button>
+									</div>
+									<div class="code-box" id="shareCodeBox"></div>
+									<p class="code-meta" id="shareCodeMeta"></p>
+									<button type="button" id="copyShareCode">Copy</button>
 									<br><br>
 									<label for="shareHashInput">Then enter the code they send back:</label>
-									<input type="text" id="shareHashInput" value="" placeholder="XXXX"/>
+									<input type="text" id="shareHashInput" value="" placeholder="Paste or type their code"/>
 									<br>
-									<button type="button" onclick="loadHash($('#shareHashInput').val())">Submit Code</button>
+									<button type="button" onclick="submitSendReply()">Submit Code</button>
 								</div>
 
 								<div id="sendFileForm" style="display:none;">
@@ -238,15 +248,17 @@
 						<div class="field" id="receiveFileForm">
 							<center>
 								<div id="getOffer">
-									<label for="receiveHashInput">Enter your code here:</label>
-									<input type="text" id="receiveHashInput" value="" placeholder="XXXX"/>
+									<label for="receiveHashInput">Enter the code they sent you:</label>
+									<textarea id="receiveHashInput" rows="4" placeholder="Paste or type the code"></textarea>
 									<br>
-									<button type="button" onclick="loadHash($('#receiveHashInput').val())">Submit Code</button>
+									<button type="button" onclick="submitReceiveCode()">Submit Code</button>
 								</div>
 
-								<div id="sendAnswer" style="display:none;">
-									<label for="receiveHashOutput">Now send this code back to the sender:</label>
-									<input type="text" id="receiveHashOutput" value=""/>
+								<div id="receiveReply" style="display:none;">
+									<label>Now send this code back to the sender:</label>
+									<div class="code-box" id="receiveCodeBox"></div>
+									<p class="code-meta" id="receiveCodeMeta"></p>
+									<button type="button" id="copyReceiveCode">Copy</button>
 								</div>
 
 								<br>
@@ -285,7 +297,9 @@
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
 		<script src="assets/js/searcher.js"></script>
-		<script src="assets/js/simplepeer.min.js"></script>
+		<script src="assets/js/sdpz.js"></script>
+		<script src="assets/js/wordlist.js"></script>
+		<script src="assets/js/handoff.js"></script>
 		<script src="assets/js/fileTransfer.js"></script>
 		<script src="assets/js/ipLookup.js"></script>
 		<script src="assets/js/accordion.js"></script>
