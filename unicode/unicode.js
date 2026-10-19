@@ -29,27 +29,32 @@ function initializeUnicode() {
 }
 
 // Load only the data needed by the emoji page (skips Confusables, which it doesn't use)
+// Rejects if any file fails, so the page can report the error instead of hanging on "loading".
 function initializeEmoji() {
 	return new Promise((resolve, reject) => {
+		let failed = false;
+		const onFail = (xhr) => {
+			if (!failed) { failed = true; reject(xhr); }
+		};
 		$.when(
 			$.getJSON("json/CodepointDict.json", function(data) {
 				codepointDict = data;
-			}),
+			}).fail(onFail),
 			$.getJSON("json/PropertyValueAliases.json", function(data) {
 				aliases = data.PropertyValueAliases;
-			}),
+			}).fail(onFail),
 			$.getJSON("json/EmojiData.json", function(data) {
 				emojiData = data;
-			}),
+			}).fail(onFail),
 			$.getJSON("json/EmojiSequences.json", function(data) {
 				emojiSequences = data;
-			}),
+			}).fail(onFail),
 			$.getJSON("json/EmojiVariationSequences.json", function(data) {
 				emojiVariationSequences = data;
-			}),
+			}).fail(onFail),
 			$.getJSON("json/EmojiZWJSequences.json", function(data) {
 				emojiZWJSequences = data;
-			})
+			}).fail(onFail)
 		).then(function() {
 			resolve();
 		});

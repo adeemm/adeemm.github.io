@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" href="../assets/images/favicon.ico" type="image/x-icon" />
     <title>Unicode 16 - Emoji</title>
     <link rel="stylesheet" href="../assets/css/main.css" />
@@ -66,10 +66,99 @@
             min-width: 160px;
             width: auto;
         }
-        .em-toolbar select {
-            flex: 0 1 auto;
-            width: auto;
+        /* Custom block dropdown (replaces the native <select>, whose popup
+           floated over the page and committed the option under the mouse) */
+        .em-dd { position: relative; flex: 0 1 auto; }
+        .em-dd-btn {
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+            display: inline-flex;
+            align-items: center;
+            height: 2.75rem;
+            min-width: 11rem;
+            max-width: 100%;
+            padding: 0 2.4rem 0 1rem;
+            background: transparent;
+            border: solid 1px #ffffff;
+            border-radius: 4px;
+            color: inherit;
+            font-size: 0.9rem;
+            line-height: normal;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
         }
+        .em-dd-btn:hover,
+        .em-dd-btn:focus,
+        .em-dd.open .em-dd-btn {
+            background: rgba(255, 255, 255, 0.075);
+            border-color: #ffffff;
+            box-shadow: 0 0 0 1px #ffffff;
+            outline: 0;
+        }
+        .em-dd-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .em-dd-caret {
+            position: absolute;
+            top: 50%;
+            right: 0.85rem;
+            margin-top: -3px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid rgba(255, 255, 255, 0.85);
+            pointer-events: none;
+            transition: transform 0.15s ease;
+        }
+        .em-dd.open .em-dd-caret { transform: rotate(180deg); }
+        .em-dd-list {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 100;
+            display: none;
+            box-sizing: border-box;
+            min-width: 100%;
+            width: max-content;
+            max-width: min(22rem, 80vw);
+            max-height: min(55vh, 24rem);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            margin: 0;
+            padding: 4px 0;
+            list-style: none;
+            background: #1b1f22;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+        }
+        .em-dd.open .em-dd-list { display: block; }
+        .em-dd.up .em-dd-list { top: auto; bottom: calc(100% + 6px); }
+        .em-dd-opt {
+            position: relative;
+            padding: 0.45em 1.2em 0.45em 2em;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .em-dd-opt.active { background: rgba(74, 144, 217, 0.4); }
+        .em-dd-opt.selected:before {
+            content: "\2713";
+            position: absolute;
+            left: 0.8em;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8fd3b3;
+            font-size: 0.85em;
+        }
+        .em-dd-list::-webkit-scrollbar { width: 8px; }
+        .em-dd-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.25); border-radius: 4px; }
+        .em-empty { padding: 1.4em 0; text-align: center; opacity: 0.65; font-size: 0.92em; }
         .em-count { font-size: 0.85em; opacity: 0.7; margin-left: auto; }
         .em-grid {
             display: grid;
@@ -193,14 +282,12 @@
                 <p>
                     An emoji can be either a single character or <em>sequence</em>
                     of codepoints consisting of a base character with modifiers.
-                    Use this page to browse standalone emoji and explore sequences.
                 </p>
 
                 <!-- ==================== INSPECTOR ==================== -->
                 <h2 class="em-section" id="inspect">Details</h2>
                 <div id="emInspectorHidden" class="em-card">
-                    Click an emoji in the grid below to explore its
-                    codepoint sequence.
+                    Click an emoji in the grid below to explore its codepoint(s).
                 </div>
                 <div id="emInspector" class="em-card em-inspector" style="display:none;"></div>
 
@@ -208,10 +295,17 @@
                 <h2 class="em-section" id="explore">Explore</h2>
                 <div class="em-toolbar">
                     <input type="text" id="emojiSearch" placeholder="Search by name, keyword or codepoint (e.g. heart, flag, 1F600)&hellip;" autocomplete="off" />
-                    <select id="emojiBlock"></select>
-                    <span class="em-count" id="emojiCount"></span>
+                    <div class="em-dd" id="blockDd">
+                        <input type="hidden" id="emojiBlock" value="ALL" />
+                        <button type="button" class="em-dd-btn" id="blockDdBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Filter by block">
+                            <span class="em-dd-label" id="blockDdLabel">All blocks</span>
+                        </button>
+                        <span class="em-dd-caret" aria-hidden="true"></span>
+                        <ul class="em-dd-list" id="blockDdList" role="listbox" aria-label="Emoji block filter"></ul>
+                    </div>
                 </div>
                 <div id="emojiGrid" class="em-grid"></div>
+                <div id="emojiEmpty" class="em-empty" style="display:none;"></div>
                 <div style="text-align:center; margin-bottom:1em;">
                     <button class="button" id="emojiMore">Show more</button>
                 </div>
@@ -222,21 +316,18 @@
                 <!-- Presentation -->
                 <div class="em-card" id="presentation">
                     <p>
-                        219 "unqualified" emoji can be displayed in either "text" or "emoji" styles.
+                        <em>Unqualified</em> emoji can be displayed in either <em>text</em> or <em>emoji</em> styles.
                         The <span class="em-mono">U+FE0F</span> (VS-16) codepoint switches to the
                         "emoji" style, while <span class="em-mono">U+FE0E</span> (VS-15) selects "text".
                     </p>
                     <div class="em-seg" id="presSeg">
-                        <button data-mode="text" class="active">Text style (U+FE0E)</button>
-                        <button data-mode="emoji">Emoji style (U+FE0F)</button>
+                        <button data-mode="text" class="active">Text Style</button>
+                        <button data-mode="emoji">Emoji Style</button>
                     </div>
                     <div class="em-play-result" style="margin-top:0.8em;">
                         <div class="em-grid" id="presPreview"></div>
                         <div class="em-codepoints" id="presHex"></div>
                     </div>
-                    <p class="em-dim">
-                        If a style is unsupported, the selector is ignored.
-                    </p>
                 </div>
 
                 <footer id="footer">
@@ -363,7 +454,11 @@
             $("#emojiGrid").empty();
             renderGridBatch();
             var unit = block === "ZWJ" ? "ZWJ sequences" : block === "KEYCAP" ? "keycap sequences" : block === "FLAG" ? "flags" : block === "SKINTONE" ? "skin tone sequences" : "emoji";
-            $("#emojiCount").text(filtered.length.toLocaleString() + " " + unit);
+            if (filtered.length === 0) {
+                $("#emojiEmpty").text("No results").show();
+            } else {
+                $("#emojiEmpty").hide();
+            }
         }
 
         function renderGridBatch() {
@@ -390,17 +485,181 @@
             $("#emojiMore").toggle(end < filtered.length);
         }
 
+        var ddState = { open: false, active: -1, options: [], kbd: false };
+
+        function ddCurrent() { return $("#emojiBlock").val() || "ALL"; }
+
+        function ddIndexForValue(value) {
+            for (var i = 0; i < ddState.options.length; i++)
+                if (ddState.options[i].value === value) return i;
+            return -1;
+        }
+
+        function ddSetValue(value, fire) {
+            $("#emojiBlock").val(value);
+            var label = value;
+            ddState.options.forEach(function(o) { if (o.value === value) label = o.label; });
+            $("#blockDdLabel").text(label);
+            $("#blockDdList .em-dd-opt").each(function() {
+                var sel = $(this).attr("data-value") === value;
+                $(this).toggleClass("selected", sel).attr("aria-selected", sel ? "true" : "false");
+            });
+            if (fire) applyFilter();
+        }
+
+        function ddSetActive(i) {
+            var n = ddState.options.length;
+            if (!n) return;
+            i = ((i % n) + n) % n;
+            ddState.active = i;
+            var $list = $("#blockDdList");
+            $list.find(".em-dd-opt").each(function(idx) { $(this).toggleClass("active", idx === i); });
+            var opt = $list.find(".em-dd-opt")[i];
+            var listEl = $list[0];
+            var r = opt.getBoundingClientRect();
+            var lr = listEl.getBoundingClientRect();
+            if (r.top < lr.top) listEl.scrollTop += r.top - lr.top;
+            else if (r.bottom > lr.bottom) listEl.scrollTop += r.bottom - lr.bottom;
+        }
+
+        // Open below the control, flip above when there is more room up.
+        function ddPlace() {
+            var root = document.getElementById("blockDd");
+            var r = root.getBoundingClientRect();
+            var maxH = Math.min(window.innerHeight * 0.55, 384);
+            var need = Math.min($("#blockDdList")[0].scrollHeight, maxH) + 8;
+            $("#blockDd").toggleClass("up", window.innerHeight - r.bottom < need && r.top > window.innerHeight - r.bottom);
+        }
+
+        function ddOpen() {
+            if (ddState.open || !ddState.options.length) return;
+            ddState.open = true;
+            $("#blockDd").addClass("open");
+            $("#blockDdBtn").attr("aria-expanded", "true");
+            ddPlace();
+            ddSetActive(Math.max(0, ddIndexForValue(ddCurrent())));
+        }
+
+        function ddClose() {
+            if (!ddState.open) return;
+            ddState.open = false;
+            ddState.active = -1;
+            $("#blockDd").removeClass("open");
+            $("#blockDdBtn").attr("aria-expanded", "false");
+            $("#blockDdList .em-dd-opt").removeClass("active");
+        }
+
+        function ddSelect(index) {
+            var o = ddState.options[index];
+            if (!o) return;
+            ddSetValue(o.value, true);
+            ddClose();
+            $("#blockDdBtn").trigger("focus");
+        }
+
+        var ddType = { buf: "", t: 0 };
+        function ddTypeahead(ch) {
+            var now = Date.now();
+            if (now - ddType.t > 600) ddType.buf = "";
+            ddType.t = now;
+            ddType.buf += ch.toLowerCase();
+            var start = ddState.active < 0 ? 0 : ddState.active + 1;
+            for (var k = 0; k < ddState.options.length; k++) {
+                var i = (start + k) % ddState.options.length;
+                if (ddState.options[i].label.toLowerCase().indexOf(ddType.buf) === 0) {
+                    ddSetActive(i);
+                    return;
+                }
+            }
+        }
+
+        function bindDdEvents() {
+            $("#blockDdBtn").on("click", function() { ddState.open ? ddClose() : ddOpen(); });
+
+            // Track keyboard vs mouse as the last input: a keyboard scroll
+            // (End, PageDown, ...) can move list content under a stationary
+            // pointer, which makes the browser fire a spurious mouseenter.
+            // While in keyboard mode those must not steal the highlight.
+            $("#blockDdBtn").on("keydown", function() { ddState.kbd = true; });
+            $("#blockDdList, #blockDdBtn").on("mousemove", function() { ddState.kbd = false; });
+
+            $("#blockDdBtn").on("keydown", function(e) {
+                var k = e.key;
+                if (!ddState.open) {
+                    if (k === "ArrowDown" || k === "ArrowUp" || k === "Enter" || k === " " || k === "Spacebar") {
+                        e.preventDefault();
+                        ddOpen();
+                    } else if (k && k.length === 1 && /[a-z0-9]/i.test(k)) {
+                        ddOpen();
+                        ddTypeahead(k);
+                    }
+                    return;
+                }
+                if (k === "ArrowDown") { e.preventDefault(); ddSetActive(ddState.active + 1); }
+                else if (k === "ArrowUp") { e.preventDefault(); ddSetActive(ddState.active - 1); }
+                else if (k === "Home") { e.preventDefault(); ddSetActive(0); }
+                else if (k === "End") { e.preventDefault(); ddSetActive(ddState.options.length - 1); }
+                else if (k === "Enter" || k === " " || k === "Spacebar") {
+                    e.preventDefault();
+                    ddSelect(ddState.active >= 0 ? ddState.active : ddIndexForValue(ddCurrent()));
+                }
+                else if (k === "Escape") { e.preventDefault(); ddClose(); }
+                else if (k === "Tab") { ddClose(); }
+                else if (k && k.length === 1 && /[a-z0-9]/i.test(k)) { ddTypeahead(k); }
+            });
+
+            // Hovering only highlights; it never changes the value.
+            $("#blockDdList").on("mouseenter", ".em-dd-opt", function() {
+                if (ddState.open && !ddState.kbd) ddSetActive($(this).index());
+            });
+
+            // Select only on a deliberate click of an option.
+            // preventDefault on mousedown keeps focus on the trigger button:
+            // without it, clicking a (non-focusable) list item blurs the
+            // button to <body>, the focusout handler below would close the
+            // list, and the click would never reach the option.
+            $("#blockDdList").on("mousedown", ".em-dd-opt", function(e) { e.preventDefault(); });
+            $("#blockDdList").on("click", ".em-dd-opt", function() {
+                if (!ddState.open) return;
+                ddSelect($(this).index());
+            });
+
+            // Clicking (or focusing) outside closes the listbox WITHOUT
+            // committing anything, and the original click still reaches the
+            // element under the cursor (e.g. an emoji cell).
+            $(document).on("mousedown.emdd", function(e) {
+                if (ddState.open && !$(e.target).closest("#blockDd").length) ddClose();
+            });
+            $(document).on("focusout.emdd", function(e) {
+                if (!ddState.open) return;
+                var to = e.relatedTarget;
+                // A null relatedTarget means focus went to the document (a
+                // mousedown on a non-focusable area); the mousedown handler
+                // above already made the close/no-close decision for that.
+                if (to && !document.getElementById("blockDd").contains(to)) ddClose();
+            });
+
+            $(window).on("blur.emdd", function() { ddClose(); });
+            $(window).on("scroll resize", function() { if (ddState.open) ddPlace(); });
+        }
+
         function buildBlockSelect() {
             var blocks = {};
             emojiList.forEach(function(e) { blocks[e.block] = true; });
             var names = Object.keys(blocks).sort();
-            var html = '<option value="ALL">All blocks</option>';
-            html += '<option value="ZWJ">ZWJ sequences</option>';
-            html += '<option value="KEYCAP">Keycaps</option>';
-            html += '<option value="FLAG">Flags</option>';
-            html += '<option value="SKINTONE">Skin tones</option>';
-            html += names.map(function(b) { return '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + '</option>'; }).join("");
-            $("#emojiBlock").html(html);
+            var opts = [
+                { value: "ALL", label: "All blocks" },
+                { value: "ZWJ", label: "ZWJ sequences" },
+                { value: "KEYCAP", label: "Keycaps" },
+                { value: "FLAG", label: "Flags" },
+                { value: "SKINTONE", label: "Skin tones" }
+            ];
+            names.forEach(function(b) { opts.push({ value: b, label: b }); });
+            ddState.options = opts;
+            $("#blockDdList").html(opts.map(function(o) {
+                return '<li class="em-dd-opt" role="option" data-value="' + escapeHtml(o.value) + '" aria-selected="false">' + escapeHtml(o.label) + "</li>";
+            }).join(""));
+            ddSetValue("ALL", false);
         }
 
         // ---------- inspector ----------
@@ -425,7 +684,7 @@
         function presentationNote(entry, cps) {
             if (cps.length > 1) return null;
             var cp = cps[0];
-            if (cp >= RI_LO && cp <= RI_HI) return "Regional indicators are not emoji on their own; two of them form a flag (see the Flags block in the explorer).";
+            if (cp >= RI_LO && cp <= RI_HI) return "Regional indicators are not emoji on their own; two of them together form a flag";
             var d = emojiData[hex(cp)];
             if (d && d.emoji_modifier) return "Skin tone modifier.";
             if (d && d.emoji_presentation) return "Defaults to the <b>emoji</b> presentation.";
@@ -684,9 +943,13 @@
         // ---------- events ----------
         function bindEvents() {
             // explorer
-            $("#emojiSearch").on("input", function() { applyFilter(); });
-            $("#emojiBlock").on("change", function() { applyFilter(); });
+            var searchTimer = null;
+            $("#emojiSearch").on("input", function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(applyFilter, 120);
+            });
             $("#emojiMore").on("click", renderGridBatch);
+            bindDdEvents();
             $("#emojiGrid").on("click", ".em-cell", function() {
                 selectSequence(fromHex($(this).attr("data-cp")));
             });
@@ -732,6 +995,9 @@
                 }
 
                 toggleLoad(false);
+            }).catch(function() {
+                toggleLoad(false);
+                $("#emojiEmpty").text("Could not load the emoji data. Please check your connection and reload the page.").show();
             });
         });
     })();
