@@ -1,6 +1,12 @@
 var aliases = []
 var codepointDict = {}
 
+// Emoji-specific data (UTS #51, Unicode 16.0)
+var emojiData = {}
+var emojiSequences = {}
+var emojiVariationSequences = {}
+var emojiZWJSequences = {}
+
 function initializeUnicode() {
 	return new Promise((resolve, reject) => {
 		$.when(
@@ -20,6 +26,34 @@ function initializeUnicode() {
 			resolve();
 		});
 	})
+}
+
+// Load only the data needed by the emoji page (skips Confusables, which it doesn't use)
+function initializeEmoji() {
+	return new Promise((resolve, reject) => {
+		$.when(
+			$.getJSON("json/CodepointDict.json", function(data) {
+				codepointDict = data;
+			}),
+			$.getJSON("json/PropertyValueAliases.json", function(data) {
+				aliases = data.PropertyValueAliases;
+			}),
+			$.getJSON("json/EmojiData.json", function(data) {
+				emojiData = data;
+			}),
+			$.getJSON("json/EmojiSequences.json", function(data) {
+				emojiSequences = data;
+			}),
+			$.getJSON("json/EmojiVariationSequences.json", function(data) {
+				emojiVariationSequences = data;
+			}),
+			$.getJSON("json/EmojiZWJSequences.json", function(data) {
+				emojiZWJSequences = data;
+			})
+		).then(function() {
+			resolve();
+		});
+	});
 }
 
 // Generate CodepointDict.json from JSON data files - https://github.com/iLib-js/UCD

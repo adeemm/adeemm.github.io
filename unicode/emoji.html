@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="shortcut icon" href="../assets/images/favicon.ico" type="image/x-icon" />
+    <title>Unicode 16 - Emoji</title>
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <link rel="stylesheet" href="../assets/css/noscript.css" />
+    <script src="../assets/js/jquery.min.js"></script>
+    <script src="unicode.js"></script>
+    <style>
+        /* ============ Emoji page styles ============ */
+        #emojiPage h2.em-section {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            padding-bottom: 0.3em;
+            margin-top: 2.2em;
+            scroll-margin-top: 1em;
+        }
+        .em-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            padding: 1.1em 1.3em;
+            margin: 1em 0;
+        }
+        .em-card h3 {
+            margin: 0 0 0.5em 0;
+            font-size: 1.05em;
+        }
+        .em-card p { margin: 0.4em 0; }
+        .em-mono, .em-codepoints {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.92em;
+            word-break: break-all;
+        }
+        .em-dim { opacity: 0.65; font-size: 0.9em; }
+
+        /* Stats strip */
+        .em-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin: 1.2em 0;
+        }
+        .em-stat {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            padding: 0.7em 0.9em;
+            text-align: center;
+        }
+        .em-stat .num { font-size: 1.5em; font-weight: bold; display: block; }
+        .em-stat .lbl { font-size: 0.78em; opacity: 0.7; }
+
+        /* Explorer */
+        .em-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin: 0.8em 0;
+        }
+        .em-toolbar input[type="text"] {
+            flex: 1 1 220px;
+            min-width: 160px;
+            width: auto;
+        }
+        .em-toolbar select {
+            flex: 0 1 auto;
+            width: auto;
+        }
+        .em-count { font-size: 0.85em; opacity: 0.7; margin-left: auto; }
+        .em-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+            gap: 5px;
+            margin: 0.8em 0;
+        }
+        .em-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            line-height: 1;
+            cursor: pointer;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.03);
+            transition: background 0.1s;
+            user-select: none;
+        }
+        .em-cell:hover { background: rgba(255, 255, 255, 0.12); }
+        .em-cell.selected { border-color: #4a90d9; background: rgba(74, 144, 217, 0.18); }
+
+        /* Inspector */
+        .em-inspector { border-color: rgba(74, 144, 217, 0.5); }
+        .em-big {
+            font-size: 4.5rem;
+            line-height: 1.15;
+            margin: 0.3em 0 0.6em 0;
+            word-break: break-all;
+        }
+        .em-name { font-size: 1.15em; font-weight: bold; margin: 0.2em 0 0.5em 0; }
+        .em-badge {
+            display: inline-block;
+            padding: 0.12em 0.6em;
+            border-radius: 3px;
+            background: rgba(74, 144, 217, 0.18);
+            border: 1px solid rgba(74, 144, 217, 0.55);
+            margin: 0 0.35em 0.35em 0;
+        }
+        .em-badge.text-presentation { background: rgba(200, 160, 60, 0.18); border-color: rgba(200, 160, 60, 0.55); }
+        .em-badges { margin: 0.4em 0 0.7em 0; }
+        table.em-seq {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.6em 0;
+            font-size: 0.92em;
+        }
+        table.em-seq th, table.em-seq td {
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 0.35em 0.6em;
+            text-align: left;
+        }
+        table.em-seq th { background: rgba(255, 255, 255, 0.07); }
+        table.em-seq td.glyph { font-size: 1.5em; text-align: center; width: 2em; }
+
+        .em-copyrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.8em; }
+
+        /* Cards */
+        .em-cardgrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 12px;
+            margin: 1em 0;
+        }
+        .em-cardgrid .em-card { margin: 0; }
+        .em-example {
+            font-size: 2.2rem;
+            line-height: 1.2;
+            margin: 0.5em 0;
+            word-break: break-all;
+        }
+
+        /* Playground */
+        .em-play-result {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1em;
+            margin: 0.7em 0;
+        }
+        .em-play-big { font-size: 3.4rem; line-height: 1.2; word-break: break-all; }
+        .em-status { margin: 0.5em 0; font-size: 0.92em; }
+        .em-status.ok { color: #8fd3b3; }
+        .em-status.warn { color: #e5c07b; }
+        .em-tryrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.5em 0; }
+        .em-try {
+            font-size: 1.15rem;
+            padding: 0.2em 0.7em;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+        }
+        .em-try:hover { background: rgba(74, 144, 217, 0.25); }
+        .em-seg {
+            display: inline-flex;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .em-seg button {
+            background: rgba(255, 255, 255, 0.05);
+            color: inherit;
+            border: 0;
+            padding: 0.35em 0.9em;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+        .em-seg button.active { background: rgba(74, 144, 217, 0.55); color: #fff; }
+
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Main -->
+        <div id="main" style="width: 100%;">
+            <article id="emojiPage" style="opacity: 1; width: 100%;">
+                <h1>Emoji</h1>
+                <p>
+                    An emoji can be either a single character or <em>sequence</em>
+                    of codepoints consisting of a base character with modifiers.
+                    Use this page to browse standalone emoji and explore sequences.
+                </p>
+
+                <!-- ==================== INSPECTOR ==================== -->
+                <h2 class="em-section" id="inspect">Details</h2>
+                <div id="emInspectorHidden" class="em-card">
+                    Click an emoji in the grid below to explore its
+                    codepoint sequence.
+                </div>
+                <div id="emInspector" class="em-card em-inspector" style="display:none;"></div>
+
+                <!-- ==================== EXPLORER ==================== -->
+                <h2 class="em-section" id="explore">Explore</h2>
+                <div class="em-toolbar">
+                    <input type="text" id="emojiSearch" placeholder="Search by name, keyword or codepoint (e.g. heart, flag, 1F600)&hellip;" autocomplete="off" />
+                    <select id="emojiBlock"></select>
+                    <span class="em-count" id="emojiCount"></span>
+                </div>
+                <div id="emojiGrid" class="em-grid"></div>
+                <div style="text-align:center; margin-bottom:1em;">
+                    <button class="button" id="emojiMore">Show more</button>
+                </div>
+
+                <!-- ==================== PLAYGROUND ==================== -->
+                <h2 class="em-section" id="playground">Presentation Style</h2>
+
+                <!-- Presentation -->
+                <div class="em-card" id="presentation">
+                    <p>
+                        219 "unqualified" emoji can be displayed in either "text" or "emoji" styles.
+                        The <span class="em-mono">U+FE0F</span> (VS-16) codepoint switches to the
+                        "emoji" style, while <span class="em-mono">U+FE0E</span> (VS-15) selects "text".
+                    </p>
+                    <div class="em-seg" id="presSeg">
+                        <button data-mode="text" class="active">Text style (U+FE0E)</button>
+                        <button data-mode="emoji">Emoji style (U+FE0F)</button>
+                    </div>
+                    <div class="em-play-result" style="margin-top:0.8em;">
+                        <div class="em-grid" id="presPreview"></div>
+                        <div class="em-codepoints" id="presHex"></div>
+                    </div>
+                    <p class="em-dim">
+                        If a style is unsupported, the selector is ignored.
+                    </p>
+                </div>
+
+                <footer id="footer">
+                    <p class="copyright"></p>
+                </footer>
+            </article>
+        </div>
+    </div>
+    <div id="bg"></div>
+    <div class="loading" id="loading">loading</div>
+    <script>
+    /* ==================== Emoji page logic ==================== */
+    (function() {
+        "use strict";
+
+        // ---------- constants ----------
+        var ZWJ = 0x200D, KEYCAP = 0x20E3, VS16 = 0xFE0F, VS15 = 0xFE0E;
+        var RI_LO = 0x1F1E6, RI_HI = 0x1F1FF;
+        var SKIN_LO = 0x1F3FB, SKIN_HI = 0x1F3FF;
+        var YEAR_BY_AGE = {"1.1":1999,"2.0":1999,"3.0":2005,"3.2":2009,"4.0":2008,"4.1":2005,"5.0":2006,"5.1":2008,"5.2":2009,"6.0":2010,"6.1":2012,"6.2":2012,"6.3":2014,"7.0":2014,"8.0":2015,"9.0":2016,"10.0":2017,"11.0":2018,"12.0":2019,"12.1":2019,"13.0":2020,"14.0":2021,"15.0":2022,"15.1":2023,"16.0":2024};
+        var EMOJI_RELEASE_BY_AGE = {"6.0":"0.6","6.1":"0.6","6.2":"0.6","6.3":"0.6","7.0":"1.0","8.0":"2.0","9.0":"3.0","10.0":"4.0","11.0":"5.0","12.0":"6.0","12.1":"7.0","13.0":"8.0\u201310.0","14.0":"11.0","15.0":"12.0\u201314.0","15.1":"15.0","16.0":"16.0"};
+        var GRID_BATCH = 400;
+
+        // ---------- helpers ----------
+        function hex(cp) { return cp.toString(16).toUpperCase().padStart(4, "0"); }
+        function cpHexStr(cp) { return "U+" + hex(cp); }
+        function cpsHex(cps) { return cps.map(hex).join(" "); } // raw key form, no U+ prefix
+        function cpsHexDisplay(cps) { return cps.map(cpHexStr).join(" "); } // for display/copy
+        function fromHex(str) { return String(str).split(/\s+/).map(function(h) { return parseInt(h, 16); }); }
+        function glyph(cps) { return cps.map(function(cp) { return String.fromCodePoint(cp); }).join(""); }
+        function cpsOf(str) { return Array.from(str, function(ch) { return ch.codePointAt(0); }); }
+        function titleCase(s) {
+            return String(s).toLowerCase().replace(/(^|[\s\-,(\[\u2019'':;])([a-z\u00c0-\u02af])/g, function(m, sep, ch) { return sep + ch.toUpperCase(); });
+        }
+        function cpNamePretty(cp) {
+            var d = codepointDict[hex(cp)];
+            if (!d || !d.name) return "U+" + hex(cp);
+            return titleCase(d.name.replace(/;/, ""));
+        }
+        function roleOf(cp) {
+            if (cp === ZWJ) return { label: "ZWJ", cls: "r-zwj" };
+            if (cp === KEYCAP) return { label: "KEYCAP", cls: "r-keycap" };
+            if (cp === VS16) return { label: "VS-16", cls: "r-vs" };
+            if (cp === VS15) return { label: "VS-15", cls: "r-vs" };
+            if (cp >= SKIN_LO && cp <= SKIN_HI) return { label: "SKIN TONE", cls: "r-skin" };
+            if (cp >= RI_LO && cp <= RI_HI) return { label: "REG. INDICATOR", cls: "r-ri" };
+            if (cp >= 0xE0000 && cp <= 0xE007F) return { label: "TAG", cls: "r-tag" };
+            var d = emojiData[hex(cp)];
+            if (d && d.emoji_modifier_base) return { label: "MODIFIER BASE", cls: "r-emoji" };
+            if (d && d.emoji) return { label: "EMOJI", cls: "r-emoji" };
+            if (d && d.emoji_component) return { label: "COMPONENT", cls: "r-comp" };
+            if (d && d.extended_pictographic) return { label: "PICTOGRAPH", cls: "r-comp" };
+            return { label: "CHARACTER", cls: "r-char" };
+        }
+        function copyText(t, btn, flashEl) {
+            var f = flashEl ? $(flashEl) : $(btn);
+            var restore = flashEl ? f.text() : f.html();
+            function done() {
+                if (flashEl) f.text("Copied!"); else f.html("\u2705 Copied");
+                setTimeout(function() { if (flashEl) f.text(restore); else f.html(restore); }, 1000);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(t).then(done, function() { fallbackCopy(t); done(); });
+            } else { fallbackCopy(t); done(); }
+        }
+        function fallbackCopy(t) {
+            var ta = document.createElement("textarea");
+            ta.value = t;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); } catch (e) {}
+            document.body.removeChild(ta);
+        }
+        function escapeHtml(s) {
+            return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // ---------- emoji list (standalone emoji: emoji=yes, not modifiers, not RIs) ----------
+        var emojiList = [];
+        var unqualified = [];
+
+        function buildLists() {
+            Object.keys(emojiData).forEach(function(k) {
+                var d = emojiData[k];
+                var cp = parseInt(k, 16);
+                var cd = codepointDict[k] || null;
+                var entry = {
+                    cp: cp, hex: k, glyph: String.fromCodePoint(cp),
+                    name: cd && cd.name ? cd.name : k,
+                    pretty: cd && cd.name ? titleCase(cd.name.replace(/;/, "")) : k,
+                    block: cd && cd.block ? cd.block : "Unknown",
+                    category: cd && cd.category ? cd.category : "?",
+                    note: d.note || "",
+                    presentation: !!d.emoji_presentation,
+                    modifierBase: !!d.emoji_modifier_base
+                };
+                if (d.emoji && !d.emoji_modifier && !(cp >= RI_LO && cp <= RI_HI)) {
+                    emojiList.push(entry);
+                    if (!d.emoji_presentation) unqualified.push(entry); // 219 unqualified emoji (keycap bases included)
+                }
+            });
+        }
+
+        // ---------- explorer ----------
+        var filtered = [];
+        var shown = 0;
+
+        function applyFilter() {
+            var q = $.trim($("#emojiSearch").val()).toLowerCase();
+            var block = $("#emojiBlock").val();
+            var isSeqBlock = block === "ZWJ" || block === "KEYCAP" || block === "FLAG" || block === "SKINTONE";
+            var pool = block === "ZWJ" ? zwjList : block === "KEYCAP" ? keycapList : block === "FLAG" ? flagList : block === "SKINTONE" ? skinToneList : emojiList;
+            filtered = pool.filter(function(e) {
+                if (!isSeqBlock && block !== "ALL" && e.block !== block) return false;
+                if (!q) return true;
+                var hexStr = e.seq ? e.hexKey : e.hex;
+                return e.name.toLowerCase().indexOf(q) !== -1
+                    || (!e.seq && e.note && e.note.toLowerCase().indexOf(q) !== -1)
+                    || hexStr.toLowerCase().indexOf(q.replace(/^u\+/, "")) !== -1;
+            });
+            shown = 0;
+            $("#emojiGrid").empty();
+            renderGridBatch();
+            var unit = block === "ZWJ" ? "ZWJ sequences" : block === "KEYCAP" ? "keycap sequences" : block === "FLAG" ? "flags" : block === "SKINTONE" ? "skin tone sequences" : "emoji";
+            $("#emojiCount").text(filtered.length.toLocaleString() + " " + unit);
+        }
+
+        function renderGridBatch() {
+            var end = Math.min(shown + GRID_BATCH, filtered.length);
+            if (shown >= filtered.length) {
+                $("#emojiMore").toggle(filtered.length > 0);
+                return;
+            }
+            var html = "";
+            for (var i = shown; i < end; i++) {
+                var e = filtered[i];
+                var title = e.seq
+                    ? e.pretty + " (" + cpsHexDisplay(e.cps) + ")"
+                    : e.pretty + " (" + cpHexStr(e.cp) + ")" + (e.note ? " \u2014 " + escapeHtml(e.note) : "");
+                var style = e.seq ? zwjCellStyle(e.cps) : "";
+                html += '<div class="em-cell' + (e.seq ? " seq" : "") + '"'
+                    + ' data-cp="' + (e.seq ? e.hexKey : e.hex) + '"'
+                    + ' title="' + escapeHtml(title) + '"'
+                    + (style ? ' style="' + style + '"' : "")
+                    + '><span>' + e.glyph + "</span></div>";
+            }
+            shown = end;
+            $("#emojiGrid").append(html);
+            $("#emojiMore").toggle(end < filtered.length);
+        }
+
+        function buildBlockSelect() {
+            var blocks = {};
+            emojiList.forEach(function(e) { blocks[e.block] = true; });
+            var names = Object.keys(blocks).sort();
+            var html = '<option value="ALL">All blocks</option>';
+            html += '<option value="ZWJ">ZWJ sequences</option>';
+            html += '<option value="KEYCAP">Keycaps</option>';
+            html += '<option value="FLAG">Flags</option>';
+            html += '<option value="SKINTONE">Skin tones</option>';
+            html += names.map(function(b) { return '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + '</option>'; }).join("");
+            $("#emojiBlock").html(html);
+        }
+
+        // ---------- inspector ----------
+        function sequenceName(cps) {
+            if (cps.length === 1) return cpNamePretty(cps[0]);
+            var key = cpsHex(cps);
+            if (emojiZWJSequences[key]) return emojiZWJSequences[key];
+            if (emojiSequences[key]) return emojiSequences[key].desc;
+            return null;
+        }
+
+        function normalizeInfo(cps) {
+            var s = glyph(cps);
+            function n(name, f) {
+                var t = s.normalize(f);
+                var same = t === s;
+                return { name: name, cps: cpsOf(t), same: same };
+            }
+            return [n("NFC", "NFC"), n("NFD", "NFD"), n("NFKC", "NFKC"), n("NFKD", "NFKD")];
+        }
+
+        function presentationNote(entry, cps) {
+            if (cps.length > 1) return null;
+            var cp = cps[0];
+            if (cp >= RI_LO && cp <= RI_HI) return "Regional indicators are not emoji on their own; two of them form a flag (see the Flags block in the explorer).";
+            var d = emojiData[hex(cp)];
+            if (d && d.emoji_modifier) return "Skin tone modifier.";
+            if (d && d.emoji_presentation) return "Defaults to the <b>emoji</b> presentation.";
+            if (d && d.emoji) return "Defaults to the <b>text</b> presentation.";
+            if (d && d.emoji_component) return "A component character (e.g. for keycaps or tag sequences).";
+            return "An extended pictographic (see the presentation switch below).";
+        }
+
+        function selectSequence(cps, opts) {
+            opts = opts || {};
+            var s = glyph(cps);
+            var key = cpsHex(cps);
+            var big = '<div class="em-big">' + s + '</div>';
+
+            var name = sequenceName(cps);
+            if (!name) {
+                name = cps.map(cpNamePretty).join(" + ");
+            }
+            var nameHtml = '<div class="em-name">' + escapeHtml(titleCase(name)) + '</div>';
+
+            // badges
+            var badges = "";
+            if (cps.length === 1) {
+                var e = emojiList.filter(function(x) { return x.cp === cps[0]; })[0];
+                var d = emojiData[hex(cps[0])] || {};
+                var cd = codepointDict[hex(cps[0])] || {};
+                if (d.age) badges += '<span class="em-badge">Unicode ' + d.age + ' (' + (YEAR_BY_AGE[d.age] || "") + ')</span>';
+                if (d.age && EMOJI_RELEASE_BY_AGE[d.age] && d.age !== "13.0" && d.age !== "15.0") {
+                    badges += '<span class="em-badge">Emoji ' + EMOJI_RELEASE_BY_AGE[d.age] + '</span>';
+                } else if (d.age === "13.0") badges += '<span class="em-badge">Emoji 8.0/9.0/10.0</span>';
+                else if (d.age === "15.0") badges += '<span class="em-badge">Emoji 12.0/13.0/14.0</span>';
+                if (cd.block) badges += '<span class="em-badge">' + escapeHtml(cd.block) + ' block</span>';
+                else if (d.emoji) badges += '<span class="em-badge text-presentation">default: text</span>';
+                var pnote = presentationNote(e, cps);
+                if (pnote) nameHtml += '<p class="em-dim">' + pnote + '</p>';
+            } else {
+                var zwjCount = cps.filter(function(c) { return c === ZWJ; }).length;
+                badges += '<span class="em-badge">' + cps.length + ' codepoints</span>';
+                if (emojiZWJSequences[key]) badges += '<span class="em-badge">official RGI ZWJ sequence</span>';
+                else if (emojiSequences[key]) badges += '<span class="em-badge">' + escapeHtml(seqTypeLabel(emojiSequences[key].type)) + '</span>';
+                else badges += '<span class="em-badge text-presentation">not in the RGI list</span>';
+            }
+
+            // sequence table
+            var rows = cps.map(function(cp, i) {
+                var r = roleOf(cp);
+                return "<tr>"
+                    + "<td>" + (i + 1) + "</td>"
+                    + '<td class="glyph">' + String.fromCodePoint(cp) + (cp === ZWJ || (cp >= 0xFE00 && cp <= 0xFE0F) || cp === KEYCAP ? "<span class='em-dim'>(invisible)</span>" : "") + "</td>"
+                    + '<td class="em-mono">' + cpHexStr(cp) + "</td>"
+                    + "<td>" + escapeHtml(cpNamePretty(cp)) + "</td>"
+                    + '<td><span class="em-role ' + r.cls + '">' + r.label + "</span></td>"
+                    + "</tr>";
+            }).join("");
+            var table = '<table class="em-seq"><tr><th>#</th><th></th><th>Codepoint</th><th>Name</th><th>Role</th></tr>' + rows + "</table>";
+
+            // normalization
+            // var norms = normalizeInfo(cps);
+            // var normHtml = norms.map(function(nrm) {
+            //    var diff = nrm.cps.length === cps.length && nrm.same;
+            //    return '<span class="em-badge' + (diff ? "" : " text-presentation") + '">' + nrm.name + ": " + (diff ? "identical" : nrm.cps.length + " cps") + "</span>";
+            // }).join("");
+            // var normBlock = '<p class="em-dim">Unicode normalization of this sequence: ' + normHtml + "</p>";
+
+            // copy row
+            var esc = cps.map(function(cp) { return "\\u{" + hex(cp) + "}"; }).join(" ");
+            var link = location.href.split("?")[0] + "?cp=" + cps.map(hex).join("-");
+            var copyRow = '<div class="em-copyrow">'
+                + '<button class="button small" data-copy="' + escapeHtml(s) + '">&#128203; Copy emoji</button>'
+                + '<button class="button small" data-copy="' + cps.map(cpHexStr).join(" ") + '">Copy codepoints</button>'
+                + '<button class="button small" data-copy="' + escapeHtml(esc) + '">Copy \\u escapes</button>'
+                // + '<a class="button small" href="' + escapeHtml(link) + '">Copy link</a>'
+                + "</div>";
+
+            var $insp = $("#emInspector");
+            $insp.html(big + nameHtml + '<div class="em-badges">' + badges + "</div>" + table + copyRow).show();
+            $("#emInspectorHidden").hide();
+
+            // deep link
+            if (history.replaceState) {
+                try { history.replaceState(null, "", "?cp=" + cps.map(hex).join("-")); } catch (e) {}
+            }
+
+            // highlight in grid
+            $(".em-cell.selected").removeClass("selected");
+            if (cps.length === 1) {
+                var h = hex(cps[0]);
+                $("#emojiGrid .em-cell[data-cp='" + h + "']").addClass("selected");
+            }
+
+            if (!opts.silent && $insp[0].scrollIntoView) $insp[0].scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        function selectFromHexSeq(h) {
+            var cps = fromHex(h);
+            if (cps.every(function(c) { return c >= 0; })) selectSequence(cps);
+        }
+
+        // ---------- RGI sequence labels (used by the inspector) ----------
+        var SEQ_TYPE_LABELS = {
+            Basic_Emoji: "basic emoji sequence",
+            RGI_Emoji_Flag_Sequence: "official flag sequence",
+            RGI_Emoji_Tag_Sequence: "official tag sequence",
+            Emoji_Keycap_Sequence: "official keycap sequence",
+            RGI_Emoji_Modifier_Sequence: "official modifier sequence"
+        };
+        function seqTypeLabel(t) { return SEQ_TYPE_LABELS[t] || t; }
+
+        // ---------- RGI ZWJ sequences: a virtual block in the explorer ----------
+        var zwjList = [];
+
+        // Display order for the ZWJ block: solo person/character sequences
+        // (farmer, teacher, …) first, then the love & couple sequences (holding
+        // hands, kisses, families), then everything else (flags, animals, faces).
+        // Within each group the original codepoint order is kept.
+        var ZWJ_CAT_RANK = { people: 0, love: 1, other: 2 };
+        var ZWJ_LOVE_WORDS = ["couple with heart", "kiss", "holding hands", "handshake", "family"];
+        var ZWJ_PERSON_WORDS = ["man", "woman", "person", "people", "deaf", "merman", "mermaid", "genie", "zombie"];
+        function zwjCategory(name, cps) {
+            var n = name.toLowerCase();
+            if (ZWJ_LOVE_WORDS.some(function(w) { return n.indexOf(w) !== -1; })) return "love";
+            var d = emojiData[hex(cps[0])];
+            if (d && d.emoji_modifier_base) return "people";
+            if (ZWJ_PERSON_WORDS.some(function(w) { return n.indexOf(w) !== -1; })) return "people"; // e.g. genie, zombie
+            return "other";
+        }
+
+        function buildZwjList() {
+            var list = [];
+            Object.keys(emojiZWJSequences).forEach(function(h, i) {
+                var cps = fromHex(h);
+                list.push({
+                    seq: true,
+                    hexKey: h,
+                    cps: cps,
+                    glyph: glyph(cps),
+                    name: emojiZWJSequences[h],
+                    pretty: titleCase(emojiZWJSequences[h]),
+                    rank: ZWJ_CAT_RANK[zwjCategory(emojiZWJSequences[h], cps)],
+                    i: i
+                });
+            });
+            list.sort(function(a, b) { return a.rank - b.rank || a.i - b.i; });
+            zwjList = list;
+        }
+
+        // Shrink the grid font so long sequences still fit inside a cell.
+        // Invisible codepoints (ZWJ, variation selectors, keycap mark, tag
+        // characters) don't count toward the visible width.
+        function zwjCellStyle(cps) {
+            var visible = cps.filter(function(cp) {
+                return cp !== ZWJ && cp !== VS15 && cp !== VS16 && cp !== KEYCAP
+                    && !(cp >= 0xE0000 && cp <= 0xE007F);
+            }).length;
+            if (visible <= 2) return "";
+            if (visible === 3) return "font-size:1.3rem;";
+            if (visible === 4) return "font-size:1rem;";
+            return "font-size:0.8rem;";
+        }
+
+        // ---------- skin tones: a virtual block in the explorer (like ZWJ) ----------
+        // The 655 RGI modifier sequences: every skin-tone-capable base in
+        // light, medium-light, medium, medium-dark and dark tone.
+        var skinToneList = [];
+
+        function buildSkinToneList() {
+            Object.keys(emojiSequences).forEach(function(h) {
+                if (emojiSequences[h].type !== "RGI_Emoji_Modifier_Sequence") return;
+                var cps = fromHex(h);
+                skinToneList.push({
+                    seq: true,
+                    hexKey: h,
+                    cps: cps,
+                    glyph: glyph(cps),
+                    name: emojiSequences[h].desc,
+                    pretty: titleCase(emojiSequences[h].desc)
+                });
+            });
+        }
+
+        // ---------- keycaps: a virtual block in the explorer (like ZWJ) ----------
+        var keycapList = [];
+
+        function keycapFor(cp) {
+            var cps = [cp];
+            if (cp === 0x23 || cp === 0x2A || (cp >= 0x30 && cp <= 0x39)) cps.push(VS16);
+            cps.push(KEYCAP);
+            return cps;
+        }
+
+        function buildKeycapList() {
+            var bases = [];
+            for (var i = 0x30; i <= 0x39; i++) bases.push(i);
+            bases.push(0x23, 0x2A);
+            bases.forEach(function(cp) {
+                var cps = keycapFor(cp);
+                var seq = emojiSequences[cpsHex(cps)] || {};
+                // data names use ICU escapes for non-alphanumerics, e.g. "keycap: \x{23}" → "keycap: #"
+                var name = (seq.desc || "keycap: " + String.fromCodePoint(cp)).replace(/\\x\{[0-9A-Fa-f]+\}/g, function(m) {
+                    return String.fromCodePoint(parseInt(m.slice(3, -1), 16));
+                });
+                keycapList.push({
+                    seq: true,
+                    hexKey: cpsHex(cps),
+                    cps: cps,
+                    glyph: glyph(cps),
+                    name: name,
+                    pretty: titleCase(name)
+                });
+            });
+        }
+
+        // ---------- presentation switch ----------
+        var presMode = "text";
+        function renderPresentation() {
+            var vs = presMode === "text" ? VS15 : VS16;
+            var vsName = vs === VS15 ? "U+FE0E (VS-15)" : "U+FE0F (VS-16)";
+            $("#presPreview").html(unqualified.map(function(e) {
+                return '<div class="em-cell" data-cp="' + e.hex + " " + hex(vs) + '" title="'
+                    + escapeHtml(e.pretty + " (" + cpHexStr(e.cp) + " " + cpHexStr(vs) + ")")
+                    + '"><span>' + e.glyph + String.fromCodePoint(vs) + "</span></div>";
+            }).join(""));
+        }
+
+        // ---------- flags: a virtual block in the explorer (like ZWJ) ----------
+        // The 259 RGI country flag pairs plus the 3 tag-sequence flags
+        // (England, Scotland, Wales), in the order the data file lists them.
+        var flagList = [];
+
+        function buildFlagList() {
+            Object.keys(emojiSequences).forEach(function(h) {
+                var t = emojiSequences[h].type;
+                if (t !== "RGI_Emoji_Flag_Sequence" && t !== "RGI_Emoji_Tag_Sequence") return;
+                var cps = fromHex(h);
+                flagList.push({
+                    seq: true,
+                    hexKey: h,
+                    cps: cps,
+                    glyph: glyph(cps),
+                    name: emojiSequences[h].desc,
+                    pretty: titleCase(emojiSequences[h].desc)
+                });
+            });
+        }
+
+        // ---------- deep links ----------
+        function readDeepLink() {
+            var q = {};
+            (location.search || "").replace(/^\?/, "").split("&").forEach(function(kv) {
+                var p = kv.split("=");
+                if (p[0]) q[p[0]] = decodeURIComponent(p[1] || "");
+            });
+            return q;
+        }
+
+        // ---------- events ----------
+        function bindEvents() {
+            // explorer
+            $("#emojiSearch").on("input", function() { applyFilter(); });
+            $("#emojiBlock").on("change", function() { applyFilter(); });
+            $("#emojiMore").on("click", renderGridBatch);
+            $("#emojiGrid").on("click", ".em-cell", function() {
+                selectSequence(fromHex($(this).attr("data-cp")));
+            });
+
+            // inspector copy buttons
+            $("#emInspector").on("click", "button[data-copy]", function() {
+                copyText($(this).attr("data-copy"), $(this));
+            });
+
+            // presentation
+            $("#presSeg button").on("click", function() {
+                presMode = $(this).data("mode");
+                $("#presSeg button").removeClass("active");
+                $(this).addClass("active");
+                renderPresentation();
+            });
+            $("#presPreview").on("click", ".em-cell", function() {
+                selectSequence(fromHex($(this).attr("data-cp")));
+            });
+
+        }
+
+        // ---------- init ----------
+        $(function() {
+            initializeEmoji().then(function() {
+                buildLists();
+                buildZwjList();
+                buildKeycapList();
+                buildFlagList();
+                buildSkinToneList();
+                buildBlockSelect();
+                applyFilter();
+                renderPresentation();
+                bindEvents();
+
+                // deep link
+                var q = readDeepLink();
+                if (q.cp) {
+                    selectSequence(fromHex(q.cp.split("-").join(" ")), { silent: true });
+                } else if (q.q) {
+                    $("#emojiSearch").val(q.q);
+                    applyFilter();
+                }
+
+                toggleLoad(false);
+            });
+        });
+    })();
+    </script>
+</body>
+</html>
