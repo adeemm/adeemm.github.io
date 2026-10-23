@@ -39,7 +39,7 @@
 				</div>
 				<nav>
 					<ul>
-						<li><a href="#IPLookup">IP Enrichment</a></li>
+						<li><a href="#IPLookup">IP / URL Lookup</a></li>
 						<li><a href="#search">Slop-less Search</a></li>
 						<li><a href="#fileMenu">P2P File Sharing</a></li>
 						<li><a href="#unicode">Unicode Tools</a></li>
@@ -52,12 +52,12 @@
 
 				<!-- IP Enrichment -->
 				<article id="IPLookup">
-					<h2 class="major">IP Lookup</h2>
+					<h2 class="major">IP / URL Lookup</h2>
 					<p>
 						<div class="field">
-							<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X" />
+							<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X or example.com" onkeypress="if(event.key==='Enter')lookupTarget($('#ipText').val())" />
 							<br>
-							<center><button onclick="lookupIP($('#ipText').val())">Submit</button></center>
+							<center><button onclick="lookupTarget($('#ipText').val())">Submit</button></center>
 						</div>
 						<hr id="ipBar" style="display:none;" />
 						<div id="ipOutput"></div>
