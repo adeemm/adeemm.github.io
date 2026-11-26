@@ -1,310 +1,827 @@
-<!DOCTYPE HTML>
-<!--
-	Dimension by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Adeem Mawani</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<meta name="description" content="The personal site for Adeem Mawani"/>
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
-		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-		<link rel="manifest" href="manifest.json" />
-	</head>
-	
-	<body>
+<!DOCTYPE html>
+<html lang="en">
 
-		<!-- File Share loader -->
-		<div class="loading" id="loading" style="display:none;">loading</div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The personal website of Adeem Mawani">
+  <meta name="theme-color" content="#010502">
+  <link rel="icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <title>Adeem.co</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-		<!-- Wrapper -->
-		<div id="wrapper">
+<body>
 
-			<!-- Header -->
-			<header id="header">
-				<ul class="icons" style="margin-bottom: 0;">
-					<li><a href="/RepWatch" target="_blank" class="icon brands fa-check"></a></li>
-					<li><a href="https://www.linkedin.com/in/adeemm" target="_blank" class="icon brands fa-linkedin"></a></li>
-					<li><a href="https://github.com/adeemm" target="_blank" class="icon brands fa-github"></a></li>
-				</ul>
-				<div class="content">
-					<div class="inner">
-						<h1>Adeem Mawani</h1>
-						<p>Security Researcher</p>
-					</div>
-				</div>
-				<nav>
-					<ul>
-						<li><a href="#IPLookup">IP / URL Lookup</a></li>
-						<li><a href="#search">Slop-less Search</a></li>
-						<li><a href="#fileMenu">P2P File Sharing</a></li>
-						<li><a href="#unicode">Unicode Tools</a></li>
-					</ul>
-				</nav>
-			</header>
+  <!-- ambient CRT background (scanlines + vignette + drift are CSS/canvas) -->
+  <canvas id="bgDrift" aria-hidden="true"></canvas>
 
-			<!-- Main -->
-			<div id="main">
+  <div class="console monitor" id="console">
 
-				<!-- IP Enrichment -->
-				<article id="IPLookup">
-					<h2 class="major">IP / URL Lookup</h2>
-					<p>
-						<div class="field">
-							<input type="text" name="ipText" id="ipText" value="" placeholder="X.X.X.X or example.com" onkeypress="if(event.key==='Enter')lookupTarget($('#ipText').val())" />
-							<br>
-							<center><button onclick="lookupTarget($('#ipText').val())">Submit</button></center>
-						</div>
-						<hr id="ipBar" style="display:none;" />
-						<div id="ipOutput"></div>
-					</p>
-				</article>
+    <!-- ── CRT monitor body ───────────────────────────────────── -->
+    <div class="mon-body">
 
-				<!-- Slop-less Search -->
-				<article id="search">
-					<h2 class="major">Slop-Less Search</h2>
-					<blockquote>Perform a web search without the AI-slop results</blockquote>
+      <!-- ── the curved glass ── -->
+      <div class="glass">
 
-					<form>
-						<div class="field" style="padding: 0;">
-							<label for="searchTypeSelect">Search Type:</label>
-							<select id="searchTypeSelect" onchange="$('#engineFormatText').text(`https://adeem.co/?search=true&type=${$('#searchTypeSelect').val()}&q=%s`);">
-								<option value="">-</option>
-								<option value="ddg">DuckDuckGo - (Results Before 2020)</option>
-								<option value="reddit">Reddit - CSE</option>
-								<option value="searxng">SearXNG</option>
-								<option value="stackexch">Stack Exchange</option>
-								<option value="wiki">Wikipedia</option>
-							</select>
-						</div>
-						<div class="field">
-							<label for="searchQueryText">Search Query:</label>
-							<input type="text" id="searchQueryText" value="">
-						</div>
-						<div class="field">
-							<center>
-								<div class="button primary icon solid fa-search" onclick="performSlopSearch(false, $('#searchTypeSelect').val(), $('#searchQueryText').val());">Search</div>
-								<br><br><br><br>
-								<label for="engineFormatText">Browser Search Engine Format:</label>
-								<code id="engineFormatText">https://adeem.co/?search=true&type=ddg&q=%s</code>
-							</center>
-						</div>
-					</form>
+        <!-- ── header ─────────────────────────────────────────────── -->
+        <header class="head">
+          <div class="head-id">
+            <span class="head-ghost"><canvas id="ghostHead" width="16" height="16"></canvas></span>
+            <span class="head-logo">
+              <canvas id="logo" width="260" height="52" role="img" aria-label="ADEEM.CO"></canvas>
+            </span>
+            <span class="head-sub" id="headSub">Website</span>
+          </div>
+          <div class="head-right">
+            <span class="clock" id="clock" title="Local time">--- -- --- --:--</span>
+          </div>
+        </header>
 
-					<hr id="essayBar" style="display:none;" />
-					<p id="essayAmbig" style="display:none;">Please be more specific. Did you mean: <br></p>
-					<p id="essayError" style="display:none;"></p>
-					<div id="output"></div>
+        <!-- ── the tool window ────────────────────────────────────── -->
+        <main class="window">
+          <div class="win-title">
+            <span class="win-ico"><img id="titleIco" src="images/dock/home.png" alt="" width="32" height="32"></span>
+            <span class="win-name" id="titleName">HOME</span>
+            <span class="win-btns">
+              <button type="button" class="winbtn" id="btnMin" title="minimize"
+                aria-label="minimize (decorative)">_</button>
+              <button type="button" class="winbtn" id="btnMax" title="maximize"
+                aria-label="maximize (decorative)">□</button>
+              <button type="button" class="winbtn winbtn-x" id="btnHome" title="back to home"
+                aria-label="back to home">✕</button>
+            </span>
+          </div>
 
-					<a href="#searchInfo" class="icon fa-question-circle" style="float:right;"></a>
-				</article>
+          <div class="win-body" id="winBody">
+            <!-- CRT power-on flash (used on first visit to each tool) -->
+            <div class="crt-flash" id="crtFlash" aria-hidden="true"></div>
 
-				<!-- SearchInfo -->
-				<article id="searchInfo">
-					<h2 class="major">What is AI-Slop?</h2>
-					<p>
-						Large-Language-Models (LLMs) are a type of artificial intelligence (AI) designed to generate and understand language / text.
-						These models are often misued to generate outputs that appear correct without any human editing or manual intervention.
-						Text outputs can subsequently be used for income generation via advertisement revenue and <a href="https://en.wikipedia.org/wiki/Spamdexing">search engine optimization (SEO) poisoning</a>, or by influencing public opinion
-						with propaganda and <a href="https://arxiv.org/pdf/2605.21540v1">synthetic political discourse</a> using <a href="https://en.wikipedia.org/wiki/Social_bot">bot social media accounts</a>.
+            <!-- no-JS fallback: every tool lives in the hash router -->
+            <noscript>
+              <section class="page active">
+                <h1 class="double sm">JAVASCRIPT REQUIRED</h1>
+                <p class="lead">
+                  The tools on this site run entirely in your browser, so JavaScript
+                  must be enabled to use them. Please turn it on and reload the page.
+                </p>
+              </section>
+            </noscript>
 
-						Vauge, low-effort prompting and a lack of specificity often leads these computer models to generate similar outputs that statistically average the patterns observed from their training data. 
-						LLM-slop can be identified by looking for some of the following writing patterns:
-						<ol>
-							<li><b>Binary contrasts:</b> "It's not X, it's Y."</li>
-							<li><b>Throat-clearing openers:</b> "Here's the thing" / "Let me be clear"</li>
-							<li><b>Faux-insight:</b> "What nobody tells you" / "The part that everyone misses"</li>
-							<li><b>Colon reveals:</b> "The best part: it learns."</li>
-							<li><b>Dramatic fragments:</b> "That's it. That's the whole thing."</li>
-							<li><b>Superficial analysis:</b> "...highlighting the team's commitment to innovation"</li>
-							<li><b>Importance puffery:</b> "...marks a pivotal moment" / "a testament to"</li>
-							<li><b>Synonym cycling:</b> "The agent handles your email. The assistant drafts replies..."</li>
-							<li><b>Fake-profound endings:</b> "The future isn't coming. It's already here."</li>
-							<li><b>Em dash usage:</b> "—"</li>
-						</ol>
-					</p>
-					<p><a href="https://xkcd.com/1838/" target="_blank">Relevant XKCD</a></p>
-				</article>
+            <!-- "WORKING" overlay, toggled by the ported tools' toggleLoad() -->
+            <div class="working" id="loading" style="display:none;" aria-hidden="true">
+              <div class="working-box">
+                <div class="working-label">WORKING…</div>
+                <div class="working-bar"><i></i></div>
+              </div>
+            </div>
 
-				<!-- Unicode Stuff -->
-				<article id="unicode">
-					<h2 class="major">Unicode 16 - Tools</h2>
-					
-					<ul>
-						<li><a href="unicode/browse.html">Browse</a></li>
-						<li><a href="unicode/combine.html">Combine</a></li>
-						<li><a href="unicode/confusables.html">Confusables</a></li>
-						<li><a href="unicode/emoji.html">Emoji</a></li>
-						<li><a href="unicode/search.html">Search</a></li>
-						<li><a href="unicode/watermark.html">Watermark</a></li>
-					</ul>
+            <!-- loader: the "flash menu" page transition -->
+            <div class="loader" id="loader" aria-hidden="true">
+              <div class="loader-label" id="loaderLabel">LOADING…</div>
+              <div class="loader-bar"><i id="loaderFill"></i></div>
+            </div>
 
-					<p><a href="https://xkcd.com/1726/" target="_blank">Relevant XKCD</a></p>
+            <!-- ═ HOME ══════════════════════════════════════════════ -->
+            <section class="page" id="home" data-acc="red">
+              <h1 class="double">WELCOME TO ADEEM.CO</h1>
 
-				</article>
+              <div class="home-grid">
+                <div class="home-copy">
+                  <p class="lead">
+                    The personal website of Adeem Mawani
+                  </p>
 
-				<!-- FileMenu -->
-				<article id="fileMenu">
-					<h2 class="major">File Sharing</h2>
-					<p>
-						<div class="field">
-							<center>
-								<br>
-								<a href="#sendFiles" id="uploadFileLink" class="button icon fa-upload">Share Files</a>
-								<br class="responsive-break">
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<br class="responsive-break">
-								<a href="#downloadFiles" id="downloadFileLink" class="button icon fa-download">Receive Files</a>
-							</center>
-						</div>
-					</p>
-					<a href="#fileInfo" class="icon fa-info-circle" style="float:right;"></a>
-				</article>
+                  <div class="hint">
+                    <span class="hint-arrow" aria-hidden="true">▼</span>
+                    CLICK AN ICON ON THE DOCK TO LAUNCH A TOOL
+                    <span class="hint-arrow" aria-hidden="true">▼</span>
+                  </div>
 
-				<!-- FileInfo -->
-				<article id="fileInfo">
-					<h2 class="major">What is it?</h2>
-					<p>
-						This is a way to transfer your files directly from one device to another. To establish a connection to
-						each other, you and the recipient exchange a set of generated "codes." After that, you can send the recipient
-						as many files as you want (until you close the connection). Also note that there's a timeout while
-						connecting, so type fast!
-					</p>
-					<p><a href="https://xkcd.com/949/" target="_blank">Relevant XKCD</a></p>
-					<h2 class="major">Why?</h2>
-					<p>
-						In peer-to-peer file transfer, your data gets sent directly to the recipient and doesn't have to travel through an intermediary server, so it's faster and more private.
-						You also don't have to worry about the file size limits that exist in emails or texts.
-					</p>
-					<h2 class="major">How?</h2>
-					<p>
-						This implementation uses WebRTC to establish a connection between browsers and is (almost) completely serverless.
-						In order for peers to discover each other, a STUN (Session Traversal Utilities for NAT) server must be used. This
-						server helps to find a network path between the two peers as a part of the ICE (Interactive Connectivity Establishment)
-						protocol. The peer initiating the connection generates an SDP (Session Description Protocol)
-						offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they generate a
-						SDP answer, which must be sent back to the first peer. After both peers complete the handshake, the connection
-						can be established and data can start passing directly between them. Normally, a signaling server is used to send the
-						initial handshake. However, I wanted to rely on as little external servers as possible (without hosting my own
-						instance), so I decided to let the users send this data directly to each other. To make this feasible,
-						the handshake is heavily compressed and boilerplate data is reconstructed client-side. For additional ease-of-use,
-						the "short-code" generated is an even shorter key linked to handshake data via a 3rd party paste site.
-						Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or symmetrical NAT,
-						so sending data directly between the two peers isn't possible.
-					</p>
-				</article>
+                  <div class="h2"><span class="sl">//</span> WHAT'S NEW</div>
+                  <ul class="news">
+                    <li><span class="new">NEW!</span> GREEN THEME: Retro Computer Terminal Site Design</li>
+                  </ul>
+                </div>
+              </div>
 
-				<!-- sendFiles -->
-				<article id="sendFiles">
-					<h2 class="major">Share Files</h2>
-					<p>
-						<div class="field" id="shareFileForm">
-							<center>
-								<div id="sendOffer">
-									<label>Send this code to the recipient:</label>
-									<div class="code-tabs" id="shareCodeTabs">
-										<button type="button" data-style="words" aria-pressed="true">Words</button>
-										<button type="button" data-style="terse" aria-pressed="false">Base32</button>
-										<button type="button" data-style="cjk" aria-pressed="false">CJK</button>
-										<button type="button" data-style="b64" aria-pressed="false">Link</button>
-										<button type="button" data-style="short" aria-pressed="false">Short-code</button>
-									</div>
-									<div class="code-box" id="shareCodeBox"></div>
-									<p class="code-meta" id="shareCodeMeta"></p>
-									<button type="button" id="copyShareCode">Copy</button>
-									<br><br>
-									<label for="shareHashInput">Then enter the code they send back:</label>
-									<input type="text" id="shareHashInput" value="" placeholder="Paste or type their code"/>
-									<br>
-									<button type="button" onclick="submitSendReply()">Submit Code</button>
-								</div>
+              <div class="h2"><span class="sl">//</span> SITE PAGE INDEX</div>
+              <div class="leaders">
+                <div class="leader yellow"><span class="lbl"><a href="#lookup">▸ WEB REPUTATION CHECKER</a></span><span
+                    class="dots"></span></div>
+                <div class="leader cyan"><span class="lbl"><a href="#search">▸ SLOP-LESS SEARCH</a></span><span
+                    class="dots"></span></div>
+                <div class="leader green"><span class="lbl"><a href="#unicode">▸ UNICODE TEXT TOOLS</a></span><span
+                    class="dots"></span></div>
+                <div class="leader amber"><span class="lbl"><a href="#fileMenu">▸ FILE SHARING</a></span><span
+                    class="dots"></span></div>
+                <div class="leader white"><span class="lbl"><a href="#about">▸ ABOUT</a></span><span
+                    class="dots"></span></div>
+              </div>
 
-								<div id="sendFileForm" style="display:none;">
-									<br>
-									<label for="selectedFile" class="button icon fa-download"><strong>Select File</strong></label>
-									<input type="file" id="selectedFile" style="display:none;"/>
-									&nbsp;&nbsp;&nbsp;
-								<button type="button" onclick="sendFile()">Send File</button>
-								</div>
+              <div class="h2"><span class="sl">//</span> OTHER LINKS</div>
+              <div class="leaders">
+                <div class="leader white"><span class="lbl"><a href="https://github.com/adeemm" target="_blank"
+                      rel="noopener">▸ GITHUB ↗</a></span><span class="dots"></span><span class="pg">EXT</span></div>
+                <div class="leader green"><span class="lbl"><a href="https://www.linkedin.com/in/adeemm" target="_blank"
+                      rel="noopener">▸ LINKEDIN ↗</a></span><span class="dots"></span><span class="pg">EXT</span></div>
+                <div class="leader cyan"><span class="lbl"><a href="https://adeem.co/RepWatch" target="_blank"
+                      rel="noopener">▸ REPWATCH ↗</a></span><span class="dots"></span><span class="pg">EXT</span></div>
+              </div>
+            </section>
 
-								<br>
-							</center>
-						</div>
+            <!-- ═ IP / URL LOOKUP ═══════════════════════════════════ -->
+            <section class="page" id="lookup" data-acc="yellow">
+              <h1 class="double sm">IP / URL LOOKUP</h1>
 
-						<div class="field" id="shareFileError" style="display:none;">
-							<center>
-								<p id="shareFileErrorMessage">Error:  </p>
-							</center>
-						</div>
-					</p>
-				</article>
+              <div class="duo">
+                <div>
+                  <p class="lead">
+                    Got a website or address that you'd like to check on?
+                    Simply type it below. The lookup gives you a set of ready-made links to
+                    check reputation databases and security scanners.
+                  </p>
+                </div>
+                <div class="duo-art"><canvas id="checkArt" width="60" height="60"></canvas></div>
+              </div>
 
-				<!-- downloadFiles -->
-				<article id="downloadFiles">
-					<h2 class="major">Receive Files</h2>
-					<p>
-						<div class="field" id="receiveFileForm">
-							<center>
-								<div id="getOffer">
-									<label for="receiveHashInput">Enter the code they sent you:</label>
-									<textarea id="receiveHashInput" rows="4" placeholder="Paste or type the code"></textarea>
-									<br>
-									<button type="button" onclick="submitReceiveCode()">Submit Code</button>
-								</div>
+              <div class="box">
+                <div class="prompt">enter a website name or an address</div>
+                <div class="rowctl">
+                  <input class="input" type="text" id="ipText" placeholder="X.X.X.X or example.com" autocomplete="off"
+                    spellcheck="false">
+                  <button type="button" class="btn" id="ipSubmit">LOOKUP</button>
+                </div>
+              </div>
 
-								<div id="receiveReply" style="display:none;">
-									<label>Now send this code back to the sender:</label>
-									<div class="code-box" id="receiveCodeBox"></div>
-									<p class="code-meta" id="receiveCodeMeta"></p>
-									<button type="button" id="copyReceiveCode">Copy</button>
-								</div>
+              <hr id="ipBar" class="divider" style="display:none;">
+              <div id="ipOutput" class="ip-output"></div>
+            </section>
 
-								<br>
+            <!-- ═ SLOP-LESS SEARCH ══════════════════════════════════ -->
+            <section class="page" id="search" data-acc="cyan">
+              <h1 class="double sm">SLOP-LESS SEARCH</h1>
 
-								<div id="downloadForm" style="display:none;">
-									<p id="downloadInfo">Waiting for a file to download...</p>
-									<p id="downloadPercent"></p>
-								</div>
-							</center>
-						</div>
+              <div class="duo">
+                <div>
+                  <p class="lead">
+                    A lot of search results now are pages that were written by
+                    machines, for machines. This tool shows you <span class="bright">real, human pages</span>.
+                    Pick a search engine, type your question, and click the button.
+                  </p>
+                </div>
+                <div class="duo-art"><canvas id="radarArt" width="60" height="60"></canvas></div>
+              </div>
 
-						<div class="field" id="receiveFileError" style="display:none;">
-							<center>
-								<p id="receiveFileErrorMessage">Error:  </p>
-							</center>
-						</div>
-					</p>
-				</article>
+              <div class="box">
+                <div class="bright">SEARCH TYPE:</div>
+                <div class="rowctl">
+                  <select class="input select" id="searchTypeSelect">
+                    <option value="">— pick one —</option>
+                    <option value="ddg">DuckDuckGo (before 2021)</option>
+                    <option value="reddit">Reddit (custom search)</option>
+                    <option value="searxng">SearXNG</option>
+                    <option value="stackexch">Stack Exchange</option>
+                    <option value="wiki">Wikipedia</option>
+                  </select>
+                  <button type="button" class="btn" id="searchBtn">[ SEARCH ]</button>
+                </div>
+                <div class="prompt">search query</div>
+                <input class="input" type="text" id="searchQueryText" placeholder="what are you searching for?"
+                  autocomplete="off">
+              </div>
 
-			</div>
+              <div class="leader red"><span class="lbl"><a href="#slop">▸ WHY SEARCH RESULTS ARE JUNK LATELY - WHAT IS
+                    AI-SLOP?</a></span><span class="dots"></span></div>
 
-			<!-- Footer -->
-			<footer id="footer">
-				<p class="copyright"></p>
-			</footer>
+              <details class="details details-yellow">
+                <summary>EXPAND TO SEE BROWSER SEARCH ENGINE FORMAT</summary>
+                <div class="box">
+                  <div class="engine" id="engineFormatText">https://adeem.co/?search=true&amp;type=ddg&amp;q=%s</div>
+                </div>
+              </details>
 
-		</div>
+              <hr id="essayBar" class="divider" style="display:none;">
+              <p id="essayAmbig" class="ambig" style="display:none;">Please be more specific. Did you mean:<br></p>
+              <p id="essayError" class="err-text" style="display:none;"></p>
+              <div id="output" class="wiki-output"></div>
+            </section>
 
-		<!-- BG -->
-		<div id="bg"></div>
+            <!-- ═ WHAT IS AI-SLOP ═══════════════════════════════════ -->
+            <section class="page" id="slop" data-acc="red">
+              <h1 class="double sm">WHAT IS AI-SLOP?</h1>
 
-		<!-- Scripts -->
-		<script src="assets/js/jquery.min.js"></script>
-		<script src="assets/js/skel.min.js"></script>
-		<script src="assets/js/animatedWebCursorLite.js"></script>
-		<script src="assets/js/util.js"></script>
-		<script src="assets/js/main.js"></script>
-		<script src="assets/js/searcher.js"></script>
-		<script src="assets/js/sdpz.js"></script>
-		<script src="assets/js/wordlist.js"></script>
-		<script src="assets/js/handoff.js"></script>
-		<script src="assets/js/fileTransfer.js"></script>
-		<script src="assets/js/ipLookup.js"></script>
-		<script src="assets/js/accordion.js"></script>
-	</body>
+              <p class="lead">
+                Large language models (LLMs) are a type of AI that can write text that <em>looks</em> right at first
+                glance.
+                That text can then be used to generate advertisement revenue,
+                for <a href="https://en.wikipedia.org/wiki/Spamdexing" target="_blank" rel="noopener">search-engine
+                  poisoning</a>,
+                or for steering public opinion with
+                <a href="https://en.wikipedia.org/wiki/Social_bot" target="_blank" rel="noopener">bot accounts</a>.
+                Because these models statistically average their training data, their writing often uses the same
+                patterns:
+              </p>
+
+              <table class="tt">
+                <tr>
+                  <th class="c-red">PATTERN</th>
+                  <th class="c-red">EXAMPLE</th>
+                </tr>
+                <tr>
+                  <td class="bright">Binary Contrasts</td>
+                  <td>"It's not X, it's Y"</td>
+                </tr>
+                <tr>
+                  <td class="bright">Throat-Clearing Openers</td>
+                  <td>"Here's the thing" <br> "Let me be clear"</td>
+                </tr>
+                <tr>
+                  <td class="bright">Faux-Insight</td>
+                  <td>"What nobody tells you"</td>
+                </tr>
+                <tr>
+                  <td class="bright">Colon Reveals</td>
+                  <td>"The best part: it learns"</td>
+                </tr>
+                <tr>
+                  <td class="bright">Dramatic Fragments</td>
+                  <td>"That's it. <br> That's the whole thing."</td>
+                </tr>
+                <tr>
+                  <td class="bright">Superficial Analysis</td>
+                  <td>"…highlighting the team's commitment to innovation"</td>
+                </tr>
+                <tr>
+                  <td class="bright">Importance Puffery</td>
+                  <td>"…marks a pivotal moment" <br> "a testament to"</td>
+                </tr>
+                <tr>
+                  <td class="bright">Fake-Profound Endings</td>
+                  <td>"The future isn't coming. <br> It's already here."</td>
+                </tr>
+                <tr>
+                  <td class="bright">Em Dash Usage</td>
+                  <td>"—"</td>
+                </tr>
+              </table>
+
+              <div class="leader amber"><span class="lbl"><a class="amberlink" href="https://xkcd.com/1838/"
+                    target="_blank" rel="noopener">▸ RELEVANT XKCD COMIC ↗</a></span></div>
+
+              <div class="leader cyan"><span class="lbl"><a href="#search">▸ SEARCH WITHOUT THE JUNK</a></span><span
+                  class="dots"></span></div>
+            </section>
+
+            <!-- ═ UNICODE 16 TOOLS ═══════════════════════════════════ -->
+            <section class="page" id="unicode" data-acc="green">
+              <h1 class="double sm">UNICODE TOOLS</h1>
+
+              <p class="lead">
+                Unicode is a large specification that gives every character on every keyboard a number.
+                These tools let you poke around and explore the standard.
+              </p>
+
+              <div class="tool-grid">
+                <a class="tool-card" href="#uniBrowse">
+                  <span class="tc-glyph c-green">日</span>
+                  <span class="tc-name">BROWSE</span>
+                  <span class="tc-desc">List the character map</span>
+                  <span class="tc-ext">OPEN ↵</span>
+                </a>
+                <a class="tool-card" href="#uniCombine">
+                  <span class="tc-glyph c-cyan">ñ</span>
+                  <span class="tc-name">COMBINE</span>
+                  <span class="tc-desc">Stack accents and marks onto a base letter</span>
+                  <span class="tc-ext">OPEN ↵</span>
+                </a>
+                <a class="tool-card" href="#uniConfusables">
+                  <span class="tc-glyph c-yellow">а</span>
+                  <span class="tc-name">CONFUSABLES</span>
+                  <span class="tc-desc">Catch look-alikes from other writing systems</span>
+                  <span class="tc-ext">OPEN ↵</span>
+                </a>
+                <a class="tool-card" href="#uniEmoji">
+                  <span class="tc-glyph c-magenta">☺</span>
+                  <span class="tc-name">EMOJI</span>
+                  <span class="tc-desc">Look up emoji by name or keyword</span>
+                  <span class="tc-ext">OPEN ↵</span>
+                </a>
+                <a class="tool-card" href="#uniSearch">
+                  <span class="tc-glyph c-amber">Ω</span>
+                  <span class="tc-name">SEARCH</span>
+                  <span class="tc-desc">Search the code chart</span>
+                  <span class="tc-ext">OPEN ↵</span>
+                </a>
+                <a class="tool-card" href="#uniWatermark">
+                  <span class="tc-glyph c-white">ŋ</span>
+                  <span class="tc-name">WATERMARK</span>
+                  <span class="tc-desc">Hide invisible characters inside ordinary text</span>
+                  <span class="tc-ext">OPEN ↵</span>
+                </a>
+              </div>
+
+              <canvas id="glyphRain" width="760" height="84" aria-hidden="true"></canvas>
+
+              <div class="leader amber"><span class="lbl"><a class="amberlink" href="https://xkcd.com/1726/"
+                    target="_blank" rel="noopener">▸ RELEVANT XKCD COMIC ↗</a></span></div>
+            </section>
+
+            <!-- ═ UNICODE · BROWSE ═══════════════════════════════════ -->
+            <section class="page" id="uniBrowse" data-acc="green">
+              <h1 class="double sm">UNICODE > BROWSE</h1>
+
+              <p class="lead">
+                View the entire code chart, group by group. Pick the sorting method below,
+                then open a group to see its characters. Click any character to see more information.
+              </p>
+
+              <div class="box">
+                <div class="prompt">browse by</div>
+                <div class="rowctl">
+                  <select class="input select" id="uniBrowseType">
+                    <option value="bidirectionalCategory" selected>Bidirectional Class</option>
+                    <option value="block">Block</option>
+                    <option value="category">Category</option>
+                    <option value="canonicalCombiningClass">Combining Class</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="uniBrowseGroups"></div>
+              <div class="tool-err" id="uniBrowseErr" hidden></div>
+            </section>
+
+            <!-- ═ UNICODE · COMBINE ══════════════════════════════════ -->
+            <section class="page" id="uniCombine" data-acc="green">
+              <h1 class="double sm">UNICODE > COMBINE</h1>
+
+              <p class="lead">
+                Type any character and stack <span class="bright">combining marks</span>
+                on it. These could include accents, diacritics, etc.
+              </p>
+
+              <div class="box">
+                <div class="sync-grid">
+                  <div>
+                    <div class="prompt">combined output (rendered)</div>
+                    <textarea class="input ta" id="uniCombText" rows="4" spellcheck="false" placeholder="a"></textarea>
+                  </div>
+                  <div>
+                    <div class="prompt">combined output (codepoints)</div>
+                    <textarea class="input ta" id="uniCombCps" rows="4" spellcheck="false"
+                      placeholder="U+0061"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="box">
+                <div class="prompt">insert a character by codepoint</div>
+                <div class="rowctl">
+                  <input class="input" type="text" id="uniInsertCp" placeholder="U+0301" autocomplete="off"
+                    spellcheck="false" style="max-width:170px">
+                  <button type="button" class="btn" id="uniPrepend">[ PREPEND ]</button>
+                  <button type="button" class="btn btn-alt" id="uniAppend">[ APPEND ]</button>
+                </div>
+                <p class="wm-note" id="uniCombNote"></p>
+              </div>
+
+              <div class="box">
+                <div class="prompt">browse the combining classes — click a row to load it into the box above</div>
+                <div class="rowctl">
+                  <select class="input select" id="uniCombCat">
+                    <option value="">— pick a class —</option>
+                  </select>
+                </div>
+                <div class="table-wrap">
+                  <table class="tt" id="uniCombTable" hidden>
+                    <thead>
+                      <tr>
+                        <th>CODEPOINT</th>
+                        <th>CHARACTER</th>
+                        <th>NAME</th>
+                      </tr>
+                    </thead>
+                    <tbody id="uniCombTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tool-err" id="uniCombineErr" hidden></div>
+            </section>
+
+            <!-- ═ UNICODE · CONFUSABLES ══════════════════════════════ -->
+            <section class="page" id="uniConfusables" data-acc="green">
+              <h1 class="double sm">UNICODE > CONFUSABLES</h1>
+
+              <p class="lead">
+                Characters from other writing systems can look almost identical to
+                the ones you type. This is how homograph attacks work. Type or
+                paste something below and the tool will show <span class="bright">look-alike or confusable</span>
+                characters.
+              </p>
+
+              <div class="box">
+                <div class="prompt">text to scan</div>
+                <input class="input" type="text" id="uniConfInput" placeholder="type or paste something…"
+                  autocomplete="off" spellcheck="false">
+              </div>
+
+              <div class="box">
+                <div class="prompt">a random look-alike version</div>
+                <div class="conf-out" id="uniConfRandom"></div>
+              </div>
+
+              <div class="box">
+                <div class="prompt">every swap, character by character</div>
+                <div class="table-wrap">
+                  <table class="tt" id="uniConfTable">
+                    <thead>
+                      <tr>
+                        <th>YOURS</th>
+                        <th>THEIR LOOK-ALIKES</th>
+                      </tr>
+                    </thead>
+                    <tbody id="uniConfRows"></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tool-err" id="uniConfusablesErr" hidden></div>
+            </section>
+
+            <!-- ═ UNICODE · EMOJI ════════════════════════════════════ -->
+            <section class="page" id="uniEmoji" data-acc="green">
+              <h1 class="double sm">UNICODE > EMOJI</h1>
+
+              <p class="lead">
+                An emoji can be a single character or a sequence consisting of a base
+                character with modifiers. Click any icon below to see more information.
+              </p>
+
+              <div class="h2"><span class="sl">//</span> INSPECTOR</div>
+              <div class="box" id="uniEmInspectIdle">Click an emoji in the grid below to see its codepoints.</div>
+              <div class="box em-inspector" id="uniEmInspect" hidden></div>
+
+              <div class="h2"><span class="sl">//</span> EXPLORE</div>
+              <div class="box">
+                <div class="rowctl">
+                  <input class="input em-search" type="text" id="uniEmSearch"
+                    placeholder="name, keyword or codepoint (e.g. heart, flag, 1F600)…" autocomplete="off">
+                  <select class="input select" id="uniEmBlock">
+                    <option value="ALL">All blocks</option>
+                    <option value="ZWJ">ZWJ sequences</option>
+                    <option value="KEYCAP">Keycaps</option>
+                    <option value="FLAG">Flags</option>
+                    <option value="SKINTONE">Skin tones</option>
+                  </select>
+                </div>
+                <div class="char-grid em-grid" id="uniEmGrid"></div>
+                <div class="em-empty" id="uniEmEmpty" hidden>NO RESULTS</div>
+                <div class="rowctl"><button type="button" class="btn" id="uniEmMore" hidden>[ SHOW MORE ]</button></div>
+              </div>
+
+              <div class="h2"><span class="sl">//</span> PRESENTATION STYLE</div>
+              <div class="box">
+                <p>
+                  Some icons can be displayed in either <span class="bright">text</span> or <span
+                    class="bright">emoji</span> styles.
+                  The <span class="bright">U+FE0F (VS-16)</span> codepoint switches to the "emoji" style, while <span
+                    class="bright">U+FE0E (VS-15)</span> selects "text".
+                </p>
+                <div class="code-tabs" id="uniEmPresSeg">
+                  <button type="button" data-mode="text" aria-pressed="true">Text Style</button>
+                  <button type="button" data-mode="emoji" aria-pressed="false">Emoji Style</button>
+                </div>
+                <div class="char-grid em-grid" id="uniEmPres"></div>
+              </div>
+              <div class="tool-err" id="uniEmojiErr" hidden></div>
+            </section>
+
+            <!-- ═ UNICODE · SEARCH ═══════════════════════════════════ -->
+            <section class="page" id="uniSearch" data-acc="green">
+              <h1 class="double sm">UNICODE > SEARCH</h1>
+
+              <p class="lead">
+                Search each Unicode character by name, keyword, comment or codepoint.
+                A single character returns the matched glyph. Click on a result to see more information.
+              </p>
+
+              <div class="box">
+                <div class="prompt">your search</div>
+                <input class="input" type="text" id="uniSearchBox" placeholder="e.g. letter, 0041, etc."
+                  autocomplete="off" spellcheck="false">
+              </div>
+
+              <div class="box" id="uniSearchOut" hidden>
+                <div class="prompt">results</div>
+                <div class="table-wrap">
+                  <table class="tt" id="uniSearchTable">
+                    <thead>
+                      <tr>
+                        <th>CHAR</th>
+                        <th>CODEPOINT</th>
+                        <th>NAME</th>
+                        <th>ALIASES</th>
+                        <th>CROSS-REFS</th>
+                        <th>COMMENTS</th>
+                      </tr>
+                    </thead>
+                    <tbody id="uniSearchRows"></tbody>
+                  </table>
+                </div>
+                <p class="dim" id="uniSearchMore"></p>
+              </div>
+              <div class="tool-err" id="uniSearchErr" hidden></div>
+            </section>
+
+            <!-- ═ UNICODE · WATERMARK ════════════════════════════════ -->
+            <section class="page" id="uniWatermark" data-acc="green">
+              <h1 class="double sm">UNICODE > WATERMARK</h1>
+
+              <p class="lead">
+                Smuggle hidden data inside an ordinary message using
+                <span class="bright">variation selectors</span> that are invisible to most
+                readers and apps. Each byte of your secret becomes an invisible
+                character.
+              </p>
+
+              <div class="box">
+                <div class="sync-grid">
+                  <div>
+                    <div class="prompt">your secret message</div>
+                    <input class="input" type="text" id="uniWmSecret" placeholder="the hidden message"
+                      autocomplete="off">
+                  </div>
+                  <div>
+                    <div class="prompt">the carrier text</div>
+                    <input class="input" type="text" id="uniWmMsg" placeholder="the visible text" autocomplete="off">
+                  </div>
+                </div>
+                <div class="rowctl">
+                  <button type="button" class="btn" id="uniWmEncode">[ ENCODE WATERMARK ]</button>
+                </div>
+                <p class="wm-note" id="uniWmNote"></p>
+              </div>
+
+              <div class="box">
+                <div class="prompt">Encoded Text</div>
+                <textarea class="input ta" id="uniWmEncoded" rows="3" spellcheck="false"></textarea>
+                <div class="rowctl">
+                  <button type="button" class="btn btn-alt" id="uniWmDecode">[ DECODE TEXT ]</button>
+                </div>
+              </div>
+
+              <div class="box">
+                <div class="prompt">Decoded</div>
+                <pre class="wm-out" id="uniWmOut"></pre>
+              </div>
+            </section>
+
+            <!-- ═ FILE SHARING ═══════════════════════════════════════ -->
+            <section class="page" id="fileMenu" data-acc="amber">
+              <h1 class="double sm">FILE SHARING</h1>
+
+              <div class="duo">
+                <div>
+                  <p class="lead">
+                    Got a file that needs to reach someone else?
+                    This tool can transfer your files using a peer-to-peer link.
+                    Just swap a set of connection codes with the other person.
+                    <br>
+                    <span class="amber">Tip:</span> the codes expire quickly, so
+                    type fast.
+                  </p>
+                </div>
+                <div class="duo-art wide"><canvas id="courierArt" width="150" height="46"></canvas></div>
+              </div>
+
+              <div class="rowctl big-btns">
+                <a id="uploadFileLink" href="#sendFiles" class="btn btn-big">▲ &nbsp;SEND A FILE</a>
+                <a id="downloadFileLink" href="#downloadFiles" class="btn btn-big btn-alt">▼ &nbsp;RECEIVE A FILE</a>
+              </div>
+
+              <div class="h2"><span class="sl">//</span> WHY BOTHER?</div>
+              <p>
+                Your file travels <span class="bright">directly</span> from one screen
+                to the other. Nothing gets uploaded to a middleman first, so it's
+                faster and more private. There's also no size limits.
+              </p>
+
+              <details class="details">
+                <summary>TECHNICAL DETAILS (FOR THE CURIOUS)</summary>
+                <p>
+                  This implementation uses WebRTC to establish a connection between browsers and is (almost) completely
+                  serverless.
+                  In order for peers to discover each other, a STUN (Session Traversal Utilities for NAT) server must be
+                  used. This
+                  server helps to find a network path between the two peers as a part of the ICE (Interactive
+                  Connectivity Establishment)
+                  protocol. The peer initiating the connection generates an SDP (Session Description Protocol)
+                  offer, which must be sent to the other peer. After the recipient receives the first peer's offer, they
+                  generate a
+                  SDP answer, which must be sent back to the first peer. After both peers complete the handshake, the
+                  connection
+                  can be established and data can start passing directly between them. Normally, a signaling server is
+                  used to send the
+                  initial handshake. However, I wanted to rely on as little external servers as possible (without
+                  hosting my own
+                  instance), so I decided to let the users send this data directly to each other. To make this feasible,
+                  the handshake is heavily compressed and boilerplate data is reconstructed client-side. For additional
+                  ease-of-use,
+                  the "short-code" generated is an even shorter key linked to handshake data via a 3rd party paste site.
+                  Please note, if the initial ICE connection fails, it's most likely an issue with a firewall or
+                  symmetrical NAT,
+                  so sending data directly between the two peers isn't possible.
+                </p>
+              </details>
+
+              <div class="leader amber"><span class="lbl"><a class="amberlink" href="https://xkcd.com/949/"
+                    target="_blank" rel="noopener">▸ RELEVANT XKCD COMIC ↗</a></span></div>
+            </section>
+
+            <!-- ═ SEND A FILE ════════════════════════════════════════ -->
+            <section class="page" id="sendFiles" data-acc="amber">
+              <h1 class="double sm">SEND A FILE</h1>
+
+              <div id="shareFileForm">
+                <div id="sendOffer" class="step">
+                  <label class="step-label">Send this code to the recipient:</label>
+                  <div class="code-tabs" id="shareCodeTabs">
+                    <button type="button" data-style="words" aria-pressed="true">Words</button>
+                    <button type="button" data-style="terse" aria-pressed="false">Base32</button>
+                    <button type="button" data-style="cjk" aria-pressed="false">CJK</button>
+                    <button type="button" data-style="b64" aria-pressed="false">Link</button>
+                    <button type="button" data-style="short" aria-pressed="false">Short-code</button>
+                  </div>
+                  <div class="code-box" id="shareCodeBox"></div>
+                  <p class="code-meta" id="shareCodeMeta"></p>
+                  <div class="rowctl">
+                    <button type="button" id="copyShareCode" class="btn">[ COPY ]</button>
+                  </div>
+                  <label class="step-label" for="shareHashInput">Then enter the code they send back:</label>
+                  <div class="rowctl">
+                    <input class="input" type="text" id="shareHashInput" value="" placeholder="Paste or type their code"
+                      autocomplete="off" spellcheck="false">
+                    <button type="button" id="submitSendReply" class="btn">[ SUBMIT CODE ]</button>
+                  </div>
+                </div>
+
+                <div id="sendFileForm" class="step" style="display:none;">
+                  <p class="bright">CHANNEL OPEN. Pick a file:</p>
+                  <div class="rowctl">
+                    <label for="selectedFile" class="btn" id="selectedFileLabel">[ SELECT FILE ]</label>
+                    <input type="file" id="selectedFile" style="display:none;">
+                    <button type="button" id="sendFileBtn" class="btn btn-alt">[ SEND FILE ]</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="shareFileError" class="err-box" style="display:none;">
+                <p id="shareFileErrorMessage" class="err-text">Error: </p>
+              </div>
+            </section>
+
+            <!-- ═ RECEIVE A FILE ═════════════════════════════════════ -->
+            <section class="page" id="downloadFiles" data-acc="amber">
+              <h1 class="double sm">RECEIVE A FILE</h1>
+
+              <div id="receiveFileForm">
+                <div id="getOffer" class="step">
+                  <label class="step-label" for="receiveHashInput">Enter the code they sent you:</label>
+                  <textarea class="input ta" id="receiveHashInput" rows="4" placeholder="Paste or type the code"
+                    autocomplete="off" spellcheck="false"></textarea>
+                  <div class="rowctl">
+                    <button type="button" id="submitReceiveCode" class="btn">[ SUBMIT CODE ]</button>
+                  </div>
+                </div>
+
+                <div id="receiveReply" class="step" style="display:none;">
+                  <p class="bright">Now send this code back to the sender:</p>
+                  <div class="code-box" id="receiveCodeBox"></div>
+                  <p class="code-meta" id="receiveCodeMeta"></p>
+                  <div class="rowctl">
+                    <button type="button" id="copyReceiveCode" class="btn">[ COPY ]</button>
+                  </div>
+                </div>
+
+                <div id="downloadForm" class="step" style="display:none;">
+                  <p id="downloadInfo" class="dl-info">Waiting for a file to download…</p>
+                  <div class="dl-progress" id="dlProgress" hidden><i id="dlProgressFill"></i></div>
+                  <p id="downloadPercent" class="dl-percent"></p>
+                </div>
+              </div>
+
+              <div id="receiveFileError" class="err-box" style="display:none;">
+                <p id="receiveFileErrorMessage" class="err-text">Error: </p>
+              </div>
+            </section>
+
+            <!-- ═ ABOUT ══════════════════════════════════════════════ -->
+            <section class="page" id="about" data-acc="white">
+              <h1 class="double sm">MEET THE WEBMASTER</h1>
+
+              <div class="card">
+                <div class="card-name bright">ADEEM MAWANI</div>
+                <div class="card-sub">Researcher</div>
+                <p class="card-copy">
+                  I specialize in cybersecurity and have created
+                  various apps, scripts, programs, and tools.
+                </p>
+              </div>
+
+              <div class="h2"><span class="sl">//</span> EXTERNAL LINKS</div>
+              <div class="box">
+                <div class="leaders">
+                  <div class="leader white"><span class="lbl"><a href="https://github.com/adeemm" target="_blank"
+                        rel="noopener">▸ GITHUB ↗</a></span><span class="dots"></span><span class="pg">EXT</span></div>
+                  <div class="leader green"><span class="lbl"><a href="https://www.linkedin.com/in/adeemm"
+                        target="_blank" rel="noopener">▸ LINKEDIN ↗</a></span><span class="dots"></span><span
+                      class="pg">EXT</span></div>
+                  <div class="leader cyan"><span class="lbl"><a href="https://adeem.co/RepWatch" target="_blank"
+                        rel="noopener">▸ REPWATCH ↗</a></span><span class="dots"></span><span class="pg">EXT</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div><!-- /win-body -->
+
+          <!-- ── status bar ─────────────────────────────────────────── -->
+          <div class="statusbar">
+            <span class="st-cell st-lead"><i class="led" id="stLed"></i><span id="stState">READY</span></span>
+            <span class="st-cell st-mid" id="stTool">HOME — WELCOME SCREEN</span>
+          </div>
+        </main>
+
+      </div><!-- /glass -->
+
+      <nav class="dock mon-panel" id="dock" aria-label="Tool launcher">
+        <span class="dock-tag">TOOL<br>LAUNCHER</span>
+
+        <button type="button" class="dock-ico" data-page="home" style="--acc:var(--tt-red);--glow:rgba(255,68,68,.40)"
+          data-tip="WELCOME SCREEN" data-key="1">
+          <span class="dk-led" aria-hidden="true"></span>
+          <span class="dk-ico"><img src="images/dock/home.png" alt="" width="32" height="32"></span>
+          <span class="dk-lab">HOME</span>
+        </button>
+
+        <button type="button" class="dock-ico" data-page="lookup"
+          style="--acc:var(--tt-yellow);--glow:rgba(255,233,59,.40)" data-tip="CHECK THE SAFETY OF A WEBSITE"
+          data-key="2">
+          <span class="dk-led" aria-hidden="true"></span>
+          <span class="dk-ico"><img src="images/dock/lookup.png" alt="" width="32" height="32"></span>
+          <span class="dk-lab">CHECK</span>
+        </button>
+
+        <button type="button" class="dock-ico" data-page="search"
+          style="--acc:var(--tt-cyan);--glow:rgba(53,242,255,.40)" data-tip="SEARCH WITHOUT THE AI JUNK" data-key="3">
+          <span class="dk-led" aria-hidden="true"></span>
+          <span class="dk-ico"><img src="images/dock/search.png" alt="" width="32" height="32"></span>
+          <span class="dk-lab">SEARCH</span>
+        </button>
+
+        <button type="button" class="dock-ico" data-page="unicode"
+          style="--acc:var(--tt-green);--glow:rgba(57,255,94,.40)" data-tip="TEXT TOOLS" data-key="4">
+          <span class="dk-led" aria-hidden="true"></span>
+          <span class="dk-ico"><img src="images/dock/unicode.png" alt="" width="32" height="32"></span>
+          <span class="dk-lab">UNICODE</span>
+        </button>
+
+        <button type="button" class="dock-ico" data-page="fileMenu"
+          style="--acc:var(--tt-amber);--glow:rgba(255,180,0,.40)" data-tip="SEND A FILE STRAIGHT TO A FRIEND"
+          data-key="5">
+          <span class="dk-led" aria-hidden="true"></span>
+          <span class="dk-ico"><img src="images/dock/files.png" alt="" width="32" height="32"></span>
+          <span class="dk-lab">FILES</span>
+        </button>
+
+        <button type="button" class="dock-ico" data-page="about"
+          style="--acc:var(--tt-white);--glow:rgba(244,255,246,.35)" data-tip="MEET THE WEBMASTER" data-key="6">
+          <span class="dk-led" aria-hidden="true"></span>
+          <span class="dk-ico"><img src="images/dock/about.png" alt="" width="32" height="32"></span>
+          <span class="dk-lab">ABOUT</span>
+        </button>
+
+        <span class="dock-tag right">MENU<br>v2.0</span>
+      </nav>
+
+    </div><!-- /mon-body -->
+    <div class="mon-stand" aria-hidden="true"></div>
+    <div class="mon-base" aria-hidden="true"></div>
+  </div><!-- /console -->
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/sdpz.js"></script>
+  <script src="js/wordlist.js"></script>
+  <script src="js/handoff.js"></script>
+  <script src="js/fileTransfer.js"></script>
+  <script src="js/ipLookup.js"></script>
+  <script src="js/searcher.js"></script>
+  <script src="js/unicodeTools.js"></script>
+  <!-- theme -->
+  <script src="js/pixels.js"></script>
+  <script src="js/ambient.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
 </html>
